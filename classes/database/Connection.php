@@ -81,6 +81,7 @@ class Connection {
             case '12': return 'Postgres12';break;
             case '11': return 'Postgres11';break;
             case '10': return 'Postgres10';break;
+	    default: return 'Postgres';break; 
         }    
 
 		switch (substr($version,0,3)) {
