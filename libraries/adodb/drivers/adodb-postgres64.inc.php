@@ -121,6 +121,11 @@ WHERE relkind in ('r','v') AND (c.relname='%s' or c.relname = lower('%s'))
 	{
 	// changes the metaColumnsSQL, adds columns: attnum[6]
 	}
+
+	function __construct()
+	{
+	// changes the metaColumnsSQL, adds columns: attnum[6]
+	}
 	
 	function ServerInfo()
 	{
@@ -803,7 +808,7 @@ WHERE (c2.relname=\'%s\' or c2.relname=lower(\'%s\'))';
 		else return 'Database connection failed';
 	}
 
-	/*	Returns: the last error message from previous database operation	*/	
+	/*	Returns: the last error message from previous database operatio*/	
 	function ErrorMsg() 
 	{
 		if ($this->_errorMsg !== false) return $this->_errorMsg;
