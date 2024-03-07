@@ -1,11 +1,6 @@
 <?php
 /**
- * ADOdb PostgreSQL driver
- *
- * NOTE: Since ADOdb 3.31, this file is no longer used, and the "postgres"
- * driver is remapped to the latest available postgres version. Maintaining
- * multiple postgres drivers is no easy job, so hopefully this will ensure
- * greater consistency and fewer bugs.
+ * ADOdb PostgreSQL 9+ driver
  *
  * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
  *
@@ -23,3 +18,23 @@
  * @copyright 2000-2013 John Lim
  * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
  */
+
+// security - hide paths
+if (!defined('ADODB_DIR')) die();
+
+include_once(ADODB_DIR."/drivers/adodb-postgres8.inc.php");
+
+class ADODB_postgres9 extends ADODB_postgres8
+{
+	var $databaseType = 'postgres9';
+}
+
+class ADORecordSet_postgres9 extends ADORecordSet_postgres8
+{
+	var $databaseType = "postgres9";
+}
+
+class ADORecordSet_assoc_postgres9 extends ADORecordSet_assoc_postgres8
+{
+	var $databaseType = "postgres9";
+}
