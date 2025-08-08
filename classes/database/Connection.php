@@ -103,7 +103,7 @@ class Connection {
 		/* All <7.4 versions are not supported */
 		// if major version is 7 or less and wasn't cought in the
 		// switch/case block, we have an unsupported version.
-		if ((int)substr($version, 0, 1) < 8)
+		if ((int)substr($version, 0, 1) < 8 && substr($version,1,1) == ".")
 			return null;
 
 		// If unknown version, then default to latest driver
