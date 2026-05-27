@@ -10,7 +10,7 @@
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
 	
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 
 	function doDefault() {
 		global $data, $lang;
@@ -49,7 +49,7 @@
 			echo "<dt>{$page}</dt>\n";
 			
 			$urls = $data->getHelp($page);
-			if (!is_array($urls)) $urls = array($urls);
+			if (!is_array($urls)) $urls = [$urls];
 			foreach ($urls as $url) {
 				echo "<dd><a href=\"{$url}\">{$url}</a></dd>\n";
 			}

@@ -19,7 +19,7 @@
 
 	global $conf, $lang;
 
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 
 	/**
 	 * Show confirmation of edit and perform actual update
@@ -98,7 +98,7 @@
 
 					echo "<td id=\"row_att_{$attrs->fields['attnum']}\" style=\"white-space:nowrap;\">";
 
-					$extras = array();
+					$extras = [];
 
 					// If the column allows nulls, then we put a JavaScript action on the data field to unset the
 					// NULL checkbox as soon as anything is entered in the field.  We use the $elements variable to 
@@ -164,8 +164,8 @@
 			echo "</form>\n";
 		}
 		else {
-			if (!isset($_POST['values'])) $_POST['values'] = array();
-			if (!isset($_POST['nulls'])) $_POST['nulls'] = array();
+			if (!isset($_POST['values'])) $_POST['values'] = [];
+			if (!isset($_POST['nulls'])) $_POST['nulls'] = [];
 			
 			$status = $data->editRow($_POST['table'], $_POST['values'], $_POST['nulls'], 
 				$_POST['format'], $_POST['types'], $key);
@@ -198,7 +198,7 @@
 			if ($rs->recordCount() == 1) {
 				echo "<p>{$lang['strconfdeleterow']}</p>\n";
 
-				$fkinfo = array();
+				$fkinfo = [];
 				echo "<table><tr>";
 					printTableHeaderCells($rs, false, true);
 				echo "</tr>";
@@ -255,7 +255,7 @@
 		global $data, $misc, $lang;
 		 
 		// Get the foreign key(s) information from the current table
-		$fkey_information = array('byconstr' => array(), 'byfield' => array());
+		$fkey_information = ['byconstr' => [], 'byfield' => []];
 
 		if (isset($_REQUEST['table'])) {
 			$constraints = $data->getConstraintsWithFields($_REQUEST['table']);
@@ -269,17 +269,17 @@
 					if ($constr['contype'] == 'f') {
 
 						if (!isset($fkey_information['byconstr'][$constr['conid']])) {
-							$fkey_information['byconstr'][$constr['conid']] = array (
+							$fkey_information['byconstr'][$constr['conid']] =  [
 								'url_data' => 'table='. urlencode($constr['f_table']) .'&amp;schema='. urlencode($constr['f_schema']),
-								'fkeys' => array(),
+								'fkeys' => [],
 								'consrc' => $constr['consrc']
-							);
+							];
 						}
 
 						$fkey_information['byconstr'][$constr['conid']]['fkeys'][$constr['p_field']] = $constr['f_field'];
 
 						if (!isset($fkey_information['byfield'][$constr['p_field']]))
-							$fkey_information['byfield'][$constr['p_field']] = array();
+							$fkey_information['byfield'][$constr['p_field']] = [];
 
 						$fkey_information['byfield'][$constr['p_field']][] = $constr['conid'];
 					}
@@ -369,9 +369,9 @@
 						echo "</a>";
 						echo "</div>";
 					}
-					echo $misc->printVal($v, $finfo->type, array('null' => true, 'clip' => ($_REQUEST['strings']=='collapsed'), 'class' => 'fk_value'));
+					echo $misc->printVal($v, $finfo->type, ['null' => true, 'clip' => ($_REQUEST['strings']=='collapsed'), 'class' => 'fk_value']);
 				} else {
-					echo $misc->printVal($v, $finfo->type, array('null' => true, 'clip' => ($_REQUEST['strings']=='collapsed')));
+					echo $misc->printVal($v, $finfo->type, ['null' => true, 'clip' => ($_REQUEST['strings']=='collapsed')]);
 				}
 				echo "</td>";
 			}
@@ -382,11 +382,11 @@
 	function doBrowseFK() {
 		global $data, $misc, $lang;
 
-		$ops = array();
+		$ops = [];
 		foreach($_REQUEST['fkey'] as $x => $y) {
 			$ops[$x] = '=';
 		}
-		$query = $data->getSelectSQL($_REQUEST['table'], array(), $_REQUEST['fkey'], $ops);
+		$query = $data->getSelectSQL($_REQUEST['table'], [], $_REQUEST['fkey'], $ops);
 		$_REQUEST['query'] = $query;
 
 		$fkinfo =& getFKInfo();
@@ -442,16 +442,16 @@
 			$subject = '';
 		}
 
-		$misc->printTrail(isset($subject) ? $subject : 'database');
+		$misc->printTrail($subject ?? 'database');
 		$misc->printTabs($subject,'browse');
 
 		/* This code is used when browsing FK in pure-xHTML (without js) */
 		if (isset($_REQUEST['fkey'])) {
-			$ops = array();
+			$ops = [];
 			foreach($_REQUEST['fkey'] as $x => $y) {
 				$ops[$x] = '=';
 			}
-			$query = $data->getSelectSQL($_REQUEST['table'], array(), $_REQUEST['fkey'], $ops);
+			$query = $data->getSelectSQL($_REQUEST['table'], [], $_REQUEST['fkey'], $ops);
 			$_REQUEST['query'] = $query;
 		}
 		
@@ -485,7 +485,7 @@
 		if (isset($object))
 			$key = $data->getRowIdentifier($object);
 		else
-			$key = array();
+			$key = [];
 		
 		// Set the schema search path
 		if (isset($_REQUEST['search_path'])) {
@@ -496,18 +496,18 @@
 
 		// Retrieve page from query.  $max_pages is returned by reference.
 		$rs = $data->browseQuery($type, 
-			isset($object) ? $object : null, 
-			isset($_SESSION['sqlquery']) ? $_SESSION['sqlquery'] : null,
+			$object ?? null, 
+			$_SESSION['sqlquery'] ?? null,
 			$_REQUEST['sortkey'], $_REQUEST['sortdir'], $_REQUEST['page'],
 			$conf['max_rows'], $max_pages);
 
 		$fkey_information =& getFKInfo();
 
 		// Build strings for GETs in array
-		$_gets = array(
+		$_gets = [
 			'server' => $_REQUEST['server'],
 			'database' => $_REQUEST['database']
-		);
+		];
 
 		if (isset($_REQUEST['schema'])) $_gets['schema'] = $_REQUEST['schema'];
 		if (isset($object)) $_gets[$subject] = $object;
@@ -553,43 +553,43 @@
 				// If a key column is not found in the record set, then we
 				// can't use the key.
 				if (!in_array($v, array_keys($rs->fields))) {
-					$key = array();
+					$key = [];
 					break;
 				}
 			}
 
-			$buttons = array(
-				'edit' => array (
+			$buttons = [
+				'edit' =>  [
 					'content' => $lang['stredit'],
-					'attr'=> array (
-						'href' => array (
+					'attr'=>  [
+						'href' =>  [
 							'url' => 'display.php',
-							'urlvars' => array_merge(array (
+							'urlvars' => array_merge( [
 								'action' => 'confeditrow',
 								'strings' => $_REQUEST['strings'],
 								'page' => $_REQUEST['page'],
-							), $_gets)
-						)
-					)
-				),
-				'delete' => array (
+							], $_gets)
+						]
+					]
+				],
+				'delete' =>  [
 					'content' => $lang['strdelete'],
-					'attr'=> array (
-						'href' => array (
+					'attr'=>  [
+						'href' =>  [
 							'url' => 'display.php',
-							'urlvars' => array_merge(array (
+							'urlvars' => array_merge( [
 								'action' => 'confdelrow',
 								'strings' => $_REQUEST['strings'],
 								'page' => $_REQUEST['page'],
-							), $_gets)
-						)
-					)
-				),
-			);
-			$actions = array(
+							], $_gets)
+						]
+					]
+				],
+			];
+			$actions = [
 				'actionbuttons' => &$buttons,
 				'place' => 'display-browse'
-			);
+			];
 			$plugin_manager->do_hook('actionbuttons', $actions);
 
 			foreach (array_keys($actions['actionbuttons']) as $action) {
@@ -599,10 +599,8 @@
 				);
 			}
 
-			$edit_params = isset($actions['actionbuttons']['edit'])?
-				$actions['actionbuttons']['edit']:array();
-			$delete_params = isset($actions['actionbuttons']['delete'])?
-				$actions['actionbuttons']['delete']:array();
+			$edit_params = $actions['actionbuttons']['edit'] ?? [];
+			$delete_params = $actions['actionbuttons']['delete'] ?? [];
 
 			// Display edit and delete actions if we have a key
 			$colspan = count($buttons);
@@ -621,7 +619,7 @@
 				echo "<tr class=\"data{$id}\">\n";
 				// Display edit and delete links if we have a key
 				if ($colspan > 0 and count($key) > 0) {
-					$keys_array = array();
+					$keys_array = [];
 					$has_nulls = false;
 					foreach ($key as $v) {
 						if ($rs->fields[$v] === null) {
@@ -673,12 +671,12 @@
 		else echo "<p>{$lang['strnodata']}</p>\n";
 
 		// Navigation links
-		$navlinks = array();
+		$navlinks = [];
 
-		$fields = array(
+		$fields = [
 			'server' => $_REQUEST['server'],
 			'database' => $_REQUEST['database'],
-		);
+		];
 
 		if (isset($_REQUEST['schema']))
 			$fields['schema'] = $_REQUEST['schema'];
@@ -687,63 +685,63 @@
 		if (isset($_REQUEST['return'])) {
 			$urlvars = $misc->getSubjectParams($_REQUEST['return']);
 
-			$navlinks['back'] = array (
-				'attr'=> array (
-					'href' => array (
+			$navlinks['back'] =  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => $urlvars['url'],
 						'urlvars' => $urlvars['params']
-					)
-				),
+					]
+				],
 				'content' => $lang['strback']
-			);
+			];
 		}
 
 		// Edit SQL link
 		if ($type == 'QUERY')
-			$navlinks['edit'] = array (
-				'attr'=> array (
-					'href' => array (
+			$navlinks['edit'] =  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'database.php',
-						'urlvars' => array_merge($fields, array (
+						'urlvars' => array_merge($fields,  [
 							'action' => 'sql',
 							'paginate' => 'on',
-						))
-					)
-				),
+						])
+					]
+				],
 				'content' => $lang['streditsql']
-			);
+			];
 
 		// Expand/Collapse
 		if ($_REQUEST['strings'] == 'expanded')
-			$navlinks['collapse'] = array (
-				'attr'=> array (
-					'href' => array (
+			$navlinks['collapse'] =  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'display.php',
 						'urlvars' => array_merge(
 							$_gets,
-							array (
+							 [
 								'strings' => 'collapsed',
 								'page' => $_REQUEST['page']
-						))
-					)
-				),
+						])
+					]
+				],
 				'content' => $lang['strcollapse']
-			);
+			];
 		else
-			$navlinks['collapse'] = array (
-				'attr'=> array (
-					'href' => array (
+			$navlinks['collapse'] =  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'display.php',
 						'urlvars' => array_merge(
 							$_gets,
-							array (
+							 [
 								'strings' => 'expanded',
 								'page' => $_REQUEST['page']
-						))
-					)
-				),
+						])
+					]
+				],
 				'content' => $lang['strexpand']
-			);
+			];
 
 		// Create view and download
 		if (isset($_REQUEST['query']) && isset($rs) && is_object($rs) && $rs->recordCount() > 0) {
@@ -752,65 +750,65 @@
 			// Report views don't set a schema, so we need to disable create view in that case
 			if (isset($_REQUEST['schema'])) {
 
-				$navlinks['createview'] = array (
-					'attr'=> array (
-						'href' => array (
+				$navlinks['createview'] =  [
+					'attr'=>  [
+						'href' =>  [
 							'url' => 'views.php',
-							'urlvars' => array_merge($fields, array(
+							'urlvars' => array_merge($fields, [
 								'action' => 'create',
 								'formDefinition' => $_REQUEST['query']
-							))
-						)
-					),
+							])
+						]
+					],
 					'content' => $lang['strcreateview']
-				);
+				];
 			}
 
-			$urlvars = array();
+			$urlvars = [];
 			if (isset($_REQUEST['search_path']))
 				$urlvars['search_path'] = $_REQUEST['search_path'];
 
-			$navlinks['download'] = array (
-				'attr'=> array (
-					'href' => array (
+			$navlinks['download'] =  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'dataexport.php',
 						'urlvars' => array_merge($fields, $urlvars)
-					)
-				),
+					]
+				],
 				'content' => $lang['strdownload']
-			);
+			];
 		}
 
 		// Insert
 		if (isset($object) && (isset($subject) && $subject == 'table'))
-			$navlinks['insert'] = array (
-				'attr'=> array (
-					'href' => array (
+			$navlinks['insert'] =  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array_merge($fields, array(
+						'urlvars' => array_merge($fields, [
 							'action' => 'confinsertrow',
 							'table' => $object
-						))
-					)
-				),
+						])
+					]
+				],
 				'content' => $lang['strinsert']
-			);
+			];
 
 		// Refresh
-		$navlinks['refresh'] = array (
-			'attr'=> array (
-				'href' => array (
+		$navlinks['refresh'] =  [
+			'attr'=>  [
+				'href' =>  [
 					'url' => 'display.php',
 					'urlvars' => array_merge(
 						$_gets,
-						array(
+						[
 							'strings' => $_REQUEST['strings'],
 							'page' => $_REQUEST['page']
-					))
-				)
-			),
+					])
+				]
+			],
 			'content' => $lang['strrefresh']
-		);
+		];
 
 		$misc->printNavLinks($navlinks, 'display-browse', get_defined_vars());
 	}

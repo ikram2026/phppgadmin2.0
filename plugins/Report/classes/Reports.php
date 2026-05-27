@@ -10,8 +10,8 @@
 	class Reports {
 
 		// A database driver
-		var $driver;
-		var $conf;
+		public $driver;
+		public $conf;
 
 		/* Constructor */
 		function __construct(&$conf, &$status) {
@@ -41,13 +41,13 @@
 			if ($this->conf['owned_reports_only']) {
 				$server_info = $misc->getServerInfo();
 				$filter['created_by'] = $server_info['username'];
-				$ops = array('created_by' => '=');
+				$ops = ['created_by' => '='];
 			}
-			else $filter = $ops = array();
+			else $filter = $ops = [];
 
 			$sql = $this->driver->getSelectSQL($this->conf['reports_table'],
-				array('report_id', 'report_name', 'db_name', 'date_created', 'created_by', 'descr', 'report_sql', 'paginate'),
-				$filter, $ops, array('db_name' => 'asc', 'report_name' => 'asc'));
+				['report_id', 'report_name', 'db_name', 'date_created', 'created_by', 'descr', 'report_sql', 'paginate'],
+				$filter, $ops, ['db_name' => 'asc', 'report_name' => 'asc']);
 
 			return $this->driver->selectSet($sql);
 		}
@@ -59,8 +59,8 @@
 		 */
 		function getReport($report_id) {
 			$sql = $this->driver->getSelectSQL($this->conf['reports_table'],
-				array('report_id', 'report_name', 'db_name', 'date_created', 'created_by', 'descr', 'report_sql', 'paginate'),
-				array('report_id' => $report_id), array('report_id' => '='), array());
+				['report_id', 'report_name', 'db_name', 'date_created', 'created_by', 'descr', 'report_sql', 'paginate'],
+				['report_id' => $report_id], ['report_id' => '='], []);
 
 			return $this->driver->selectSet($sql);
 		}
@@ -77,13 +77,13 @@
 		function createReport($report_name, $db_name, $descr, $report_sql, $paginate) {
 			global $misc;
 			$server_info = $misc->getServerInfo();
-			$temp = array(
+			$temp = [
 				'report_name' => $report_name,
 				'db_name' => $db_name,
 				'created_by' => $server_info['username'],
 				'report_sql' => $report_sql,
 				'paginate' => $paginate ? 'true' : 'false',
-			);
+			];
 			if ($descr != '') $temp['descr'] = $descr;
 
 			return $this->driver->insert($this->conf['reports_table'], $temp);
@@ -102,17 +102,17 @@
 		function alterReport($report_id, $report_name, $db_name, $descr, $report_sql, $paginate) {
 			global $misc;
 			$server_info = $misc->getServerInfo();
-			$temp = array(
+			$temp = [
 				'report_name' => $report_name,
 				'db_name' => $db_name,
 				'created_by' => $server_info['username'],
 				'report_sql' => $report_sql,
 				'paginate' => $paginate ? 'true' : 'false',
 				'descr' => $descr
-			);
+			];
 
 			return $this->driver->update($this->conf['reports_table'], $temp,
-							array('report_id' => $report_id));
+							['report_id' => $report_id]);
 		}
 
 		/**
@@ -121,7 +121,7 @@
 		 * @return 0 success
 		 */
 		function dropReport($report_id) {
-			return $this->driver->delete($this->conf['reports_table'], array('report_id' => $report_id));
+			return $this->driver->delete($this->conf['reports_table'], ['report_id' => $report_id]);
 		}
 
 	}

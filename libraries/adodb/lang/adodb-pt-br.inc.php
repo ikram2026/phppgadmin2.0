@@ -1,7 +1,7 @@
 <?php
 // contributed by "Levi Fukumori" levi _AT_ fukumori _DOT_ com _DOT_ br
 // portugese (brazilian)
-$ADODB_LANG_ARRAY = array (
+$ADODB_LANG_ARRAY =  [
 			'LANG'                      => 'pt-br',
             DB_ERROR                    => 'erro desconhecido',
             DB_ERROR_ALREADY_EXISTS     => 'já existe',
@@ -31,5 +31,5 @@ $ADODB_LANG_ARRAY = array (
             DB_ERROR_EXTENSION_NOT_FOUND=> 'extensão não encontrada',
             DB_ERROR_NOSUCHDB           => 'banco de dados não encontrado',
             DB_ERROR_ACCESS_VIOLATION   => 'permissão insuficiente'
-);
+];
 ?>

@@ -15,7 +15,7 @@
     global $PHPCOVERAGE_REPORT_DIR;
     global $PHPCOVERAGE_HOME;
 
-    $basedir = dirname(__FILE__);
+    $basedir = __DIR__;
     for($ii=1; $ii < $argc; $ii++) {
         if(strpos($argv[$ii], "PHPCOVERAGE_REPORT_DIR=") !== false) {
             parse_str($argv[$ii]);

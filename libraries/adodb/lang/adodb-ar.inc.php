@@ -1,6 +1,6 @@
 <?php
 // by "El-Shamaa, Khaled" <k.el-shamaa#cgiar.org>
-$ADODB_LANG_ARRAY = array (
+$ADODB_LANG_ARRAY =  [
 			'LANG'			    => 'ar',
 	    DB_ERROR			=> 'ÎØÃ ÛíÑ ãÍÏÏ',
 	    DB_ERROR_ALREADY_EXISTS	=> 'ãæÌæÏ ãÓÈÞÇ',
@@ -29,5 +29,5 @@ $ADODB_LANG_ARRAY = array (
 	    DB_ERROR_EXTENSION_NOT_FOUND=> 'áã íÊã ÅíÌÇÏ ÇáÅÖÇÝÉ ÇáãÊÚáÞÉ',
 	    DB_ERROR_NOSUCHDB		=> 'áíÓ åäÇáß ÞÇÚÏÉ ÈíÇäÇÊ ÈåÐÇ ÇáÇÓã',
 	    DB_ERROR_ACCESS_VIOLATION	=> 'ÓãÇÍíÇÊ ÛíÑ ßÇÝíÉ'
-);
+];
 ?>

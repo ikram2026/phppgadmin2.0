@@ -58,7 +58,7 @@
 						if ($status == 0)
 							$msg.= sprintf('%s: %s<br />', htmlentities($o, ENT_QUOTES, 'UTF-8'), $lang['strclusteredgood']);
 						else {
-							doDefault($type, sprintf('%s%s: %s<br />', $msg, htmlentities($o, ENT_QUOTES, 'UTF-8'), $lang['strclusteredbad']));
+							doDefault($type);
 							return;
 						}
 					}
@@ -143,7 +143,7 @@
 					if ($status == 0)
 						$msg.= sprintf('%s: %s<br />', htmlentities($o, ENT_QUOTES, 'UTF-8'), $lang['strreindexgood']);
 					else {
-						doDefault($type, sprintf('%s%s: %s<br />', $msg, htmlentities($o, ENT_QUOTES, 'UTF-8'), $lang['strreindexbad']));
+						doDefault($type);
 						return;
 					}
 				}
@@ -217,7 +217,7 @@
 					if ($status == 0)
 						$msg.= sprintf('%s: %s<br />', htmlentities($o, ENT_QUOTES, 'UTF-8'), $lang['stranalyzegood']);
 					else {
-						doDefault($type, sprintf('%s%s: %s<br />', $msg, htmlentities($o, ENT_QUOTES, 'UTF-8'), $lang['stranalyzebad']));
+						doDefault($type);
 						return;
 					}
 				}
@@ -294,7 +294,7 @@
 					if ($status == 0)
 						$msg.= sprintf('%s: %s<br />', htmlentities($t, ENT_QUOTES, 'UTF-8'), $lang['strvacuumgood']);
 					else {
-						doDefault($type, sprintf('%s%s: %s<br />', $msg, htmlentities($t, ENT_QUOTES, 'UTF-8'), $lang['strvacuumbad']));
+						doDefault($type);
 						return;
 					}
 				}
@@ -322,7 +322,7 @@
 		global $script, $data, $misc, $lang;
 		
 		if (empty($_REQUEST['table'])) {
-			doAdmin($type, '', $lang['strspecifyeditvacuumtable']);
+			doAdmin($type, '');
 			return;
 		}
 		
@@ -334,7 +334,7 @@
 			$misc->printMsg(sprintf($msg, $misc->printVal($_REQUEST['table'])));
 
 			if (empty($_REQUEST['table'])) {
-				doAdmin($type, '', $lang['strspecifyeditvacuumtable']);
+				doAdmin($type, '');
 				return;
 			}
 			
@@ -403,7 +403,7 @@
 				$_POST['autovacuum_vacuum_cost_delay'], $_POST['autovacuum_vacuum_cost_limit']);
 			
 			if ($status == 0)
-				doAdmin($type, '', sprintf($lang['strsetvacuumtablesaved'], $_REQUEST['table']));
+				doAdmin($type, '');
 			else
 				doEditAutovacuum($type, true, $lang['strsetvacuumtablefail']);
 		}
@@ -416,7 +416,7 @@
 		global $script, $data, $misc, $lang;
 
 		if (empty($_REQUEST['table'])) {
-			doAdmin($type, '', $lang['strspecifydelvacuumtable']);
+			doAdmin($type, '');
 			return;
 		}
 		
@@ -433,7 +433,7 @@
 			echo "<input type=\"hidden\" name=\"action\" value=\"delautovac\" />\n";
 			echo $misc->form;
 			echo "<input type=\"hidden\" name=\"table\" value=\"", htmlspecialchars($_REQUEST['table']), "\" />\n";
-			echo "<input type=\"hidden\" name=\"rel\" value=\"", htmlspecialchars(serialize(array($_REQUEST['schema'], $_REQUEST['table']))), "\" />\n";
+			echo "<input type=\"hidden\" name=\"rel\" value=\"", htmlspecialchars(serialize([$_REQUEST['schema'], $_REQUEST['table']])), "\" />\n";
 			echo "<input type=\"submit\" name=\"yes\" value=\"{$lang['stryes']}\" />\n";
 			echo "</form>\n";
 			
@@ -449,10 +449,10 @@
 			$status = $data->dropAutovacuum($_POST['table']);
 			
 			if ($status == 0) {
-				doAdmin($type, '', sprintf($lang['strvacuumtablereset'], $misc->printVal($_POST['table'])));
+				doAdmin($type, '');
 			}
 			else
-				doAdmin($type, '', sprintf($lang['strdelvacuumtablefail'], $misc->printVal($_POST['table'])));
+				doAdmin($type, '');
 		}
 	}
 
@@ -573,89 +573,89 @@
 				return htmlspecialchars($p[1]);
 			}
 			
-			$columns = array(
-				'namespace' => array(
+			$columns = [
+				'namespace' => [
 					'title' => $lang['strschema'],
 					'field' => field('nspname'),
 					'url'   => "redirect.php?subject=schema&amp;{$misc->href}&amp;",
-					'vars'  => array('schema' => 'nspname'),
-				),	
-				'relname' => array(
+					'vars'  => ['schema' => 'nspname'],
+				],	
+				'relname' => [
 					'title' => $lang['strtable'],
 					'field' => field('relname'),
 					'url'	=> "redirect.php?subject=table&amp;{$misc->href}&amp;",
-					'vars'  => array('table' => 'relname', 'schema' => 'nspname'),
-				),
-				'autovacuum_enabled' => array(
+					'vars'  => ['table' => 'relname', 'schema' => 'nspname'],
+				],
+				'autovacuum_enabled' => [
 					'title' => $lang['strenabled'],
-					'field' => callback('enlight', array('autovacuum_enabled', $defaults['autovacuum'])),
+					'field' => callback('enlight', ['autovacuum_enabled', $defaults['autovacuum']]),
 					'type' => 'verbatim'
-				),
-				'autovacuum_vacuum_threshold' => array(
+				],
+				'autovacuum_vacuum_threshold' => [
 					'title' => $lang['strvacuumbasethreshold'],
-					'field' => callback('enlight', array('autovacuum_vacuum_threshold', $defaults['autovacuum_vacuum_threshold'])),
+					'field' => callback('enlight', ['autovacuum_vacuum_threshold', $defaults['autovacuum_vacuum_threshold']]),
 					'type' => 'verbatim'
-				),
-				'autovacuum_vacuum_scale_factor' => array(
+				],
+				'autovacuum_vacuum_scale_factor' => [
 					'title' => $lang['strvacuumscalefactor'],
-					'field' => callback('enlight', array('autovacuum_vacuum_scale_factor', $defaults['autovacuum_vacuum_scale_factor'])),
+					'field' => callback('enlight', ['autovacuum_vacuum_scale_factor', $defaults['autovacuum_vacuum_scale_factor']]),
 					'type' => 'verbatim'
-				),
-				'autovacuum_analyze_threshold' => array(
+				],
+				'autovacuum_analyze_threshold' => [
 					'title' => $lang['stranalybasethreshold'],
-					'field' => callback('enlight', array('autovacuum_analyze_threshold', $defaults['autovacuum_analyze_threshold'])),
+					'field' => callback('enlight', ['autovacuum_analyze_threshold', $defaults['autovacuum_analyze_threshold']]),
 					'type' => 'verbatim'
-				),
-				'autovacuum_analyze_scale_factor' => array(
+				],
+				'autovacuum_analyze_scale_factor' => [
 					'title' => $lang['stranalyzescalefactor'],
-					'field' => callback('enlight', array('autovacuum_analyze_scale_factor', $defaults['autovacuum_analyze_scale_factor'])),
+					'field' => callback('enlight', ['autovacuum_analyze_scale_factor', $defaults['autovacuum_analyze_scale_factor']]),
 					'type' => 'verbatim'
-				),
-				'autovacuum_vacuum_cost_delay' => array(
+				],
+				'autovacuum_vacuum_cost_delay' => [
 					'title' => $lang['strvacuumcostdelay'],
-					'field' => concat(callback('enlight', array('autovacuum_vacuum_cost_delay', $defaults['autovacuum_vacuum_cost_delay'])), 'ms'),
+					'field' => concat(callback('enlight', ['autovacuum_vacuum_cost_delay', $defaults['autovacuum_vacuum_cost_delay']]), 'ms'),
 					'type' => 'verbatim'
-				),
-				'autovacuum_vacuum_cost_limit' => array(
+				],
+				'autovacuum_vacuum_cost_limit' => [
 					'title' => $lang['strvacuumcostlimit'],
-					'field' => callback('enlight', array('autovacuum_vacuum_cost_limit', $defaults['autovacuum_vacuum_cost_limit'])),
+					'field' => callback('enlight', ['autovacuum_vacuum_cost_limit', $defaults['autovacuum_vacuum_cost_limit']]),
 					'type' => 'verbatim'
-				),
-			);
+				],
+			];
 			
 			// Maybe we need to check permissions here?
-			$columns['actions'] = array('title' => $lang['stractions']);
+			$columns['actions'] = ['title' => $lang['stractions']];
 
-			$actions = array(
-				'edit' => array(
+			$actions = [
+				'edit' => [
 					'content' => $lang['stredit'],
-					'attr'=> array (
-						'href' => array (
+					'attr'=>  [
+						'href' =>  [
 							'url' => $script,
-							'urlvars' => array (
+							'urlvars' =>  [
 								'subject' => $type,
 								'action' => 'confeditautovac',
 								'schema' => field('nspname'),
 								'table' => field('relname')
-							)
-						)
-					)
-				),
-				'delete' => array(
+							]
+						]
+					]
+				],
+				'delete' => [
 					'content' => $lang['strdelete'],
-					'attr'=> array (
-						'href' => array (
+					'attr'=>  [
+						'href' =>  [
 							'url' => $script,
-							'urlvars' => array (
+							'urlvars' =>  [
 								'subject' => $type,
 								'action' => 'confdelautovac',
 								'schema' => field('nspname'),
 								'table' => field('relname')
-							)
-						)
-					)
-				)
-			);
+							]
+						]
+					]
+				]
+			];
 
 			if ($type == 'table') {
 				unset($actions['edit']['vars']['schema'], 
@@ -684,7 +684,7 @@
 		}
 		else {
 			// $_REQUEST['table'] is no set if we are in the schema page
-			$_REQUEST['object'] = (isset($_REQUEST['table']) ? $_REQUEST['table']:'');
+			$_REQUEST['object'] = ($_REQUEST['table'] ?? '');
 			$script = 'tables.php';
 		}
 

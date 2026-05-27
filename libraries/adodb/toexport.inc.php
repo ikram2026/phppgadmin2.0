@@ -88,7 +88,7 @@ function _adodb_export(&$rs,$sep,$sepreplace,$fp=false,$addtitles=true,$quote = 
 	$max = $rs->FieldCount();
 	
 	while (!$rs->EOF) {
-		$elements = array();
+		$elements = [];
 		$i = 0;
 		
 		if ($hasNumIndex) {

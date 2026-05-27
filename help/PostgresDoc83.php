@@ -20,7 +20,7 @@ $this->help_page['pg.ftscfg.alter'] = 'sql-altertsconfig.html';
 
 $this->help_page['pg.ftsdict'] = 'textsearch-dictionaries.html';
 $this->help_page['pg.ftsdict.drop'] = 'sql-droptsdictionary.html';
-$this->help_page['pg.ftsdict.create'] = array('sql-createtsdictionary.html', 'sql-createtstemplate.html');
+$this->help_page['pg.ftsdict.create'] = ['sql-createtsdictionary.html', 'sql-createtstemplate.html'];
 $this->help_page['pg.ftsdict.alter'] = 'sql-altertsdictionary.html';
 
 $this->help_page['pg.ftsparser'] = 'textsearch-parsers.html';

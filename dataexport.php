@@ -7,14 +7,14 @@
 	 * $Id: dataexport.php,v 1.26 2007/07/12 19:26:22 xzilla Exp $
 	 */
 
-	$extensions = array(
+	$extensions = [
 		'sql' => 'sql',
 		'copy' => 'sql',
 		'csv' => 'csv',
 		'tab' => 'txt',
 		'html' => 'html',
 		'xml' => 'xml'
-	);
+	];
 
 	// Prevent timeouts on large exports (non-safe mode only)
 	if (!ini_get('safe_mode')) set_time_limit(0);
@@ -124,17 +124,17 @@
 				echo " FROM stdin;\n";
 				while (!$rs->EOF) {
 					$first = true;
-					foreach ($rs->fields as $k => $v) {
+					foreach ($rs->fields as $v) {
 						// Escape value
 						$v = $data->escapeBytea($v);
 						
 						// We add an extra escaping slash onto octal encoded characters
 						$v = preg_replace('/\\\\([0-7]{3})/', '\\\\\1', $v);
 						if ($first) {
-							echo (is_null($v)) ? '\\N' : $v;
+							echo $v ?? '\\N';
 							$first = false;
 						}
-						else echo "\t", (is_null($v)) ? '\\N' : $v;
+						else echo "\t", $v ?? '\\N';
 					}
 					echo "\n";
 					$rs->moveNext();
@@ -154,7 +154,7 @@
 				if (!$rs->EOF) {
 					// Output header row
 					$j = 0;
-					foreach ($rs->fields as $k => $v) {
+					foreach ($rs->fields as $v) {
 						$finfo = $rs->fetchField($j++);
 						if ($finfo->name == $data->id && !$oids) continue;
 						echo "\t\t<th>", $misc->printVal($finfo->name, true), "</th>\r\n";
@@ -164,7 +164,7 @@
 				while (!$rs->EOF) {
 					echo "\t<tr>\r\n";
 					$j = 0;
-					foreach ($rs->fields as $k => $v) {
+					foreach ($rs->fields as $v) {
 						$finfo = $rs->fetchField($j++);
 						if ($finfo->name == $data->id && !$oids) continue;
 						echo "\t\t<td>", $misc->printVal($v, true, $finfo->type), "</td>\r\n";
@@ -183,7 +183,7 @@
 					// Output header row
 					$j = 0;
 					echo "\t<header>\n";
-					foreach ($rs->fields as $k => $v) {
+					foreach ($rs->fields as $v) {
 						$finfo = $rs->fetchField($j++);
 						$name = htmlspecialchars($finfo->name);
 						$type = htmlspecialchars($finfo->type);
@@ -195,7 +195,7 @@
 				while (!$rs->EOF) {
 					$j = 0;
 					echo "\t\t<row>\n";
-					foreach ($rs->fields as $k => $v) {
+					foreach ($rs->fields as $v) {
 						$finfo = $rs->fetchField($j++);
 						$name = htmlspecialchars($finfo->name);
 						if (!is_null($v)) $v = htmlspecialchars($v);
@@ -270,7 +270,7 @@
 				}
 				while (!$rs->EOF) {
 					$first = true;
-					foreach ($rs->fields as $k => $v) {
+					foreach ($rs->fields as $v) {
 						if (!is_null($v)) $v = str_replace('"', '""', $v);
 						if ($first) {
 							echo (is_null($v)) ? "\"\\N\"" : "\"{$v}\"";
@@ -303,7 +303,7 @@
 
 		$misc->printHeader($lang['strexport']);
 		$misc->printBody();
-		$misc->printTrail(isset($_REQUEST['subject']) ? $_REQUEST['subject'] : 'database');
+		$misc->printTrail($_REQUEST['subject'] ?? 'database');
 		$misc->printTitle($lang['strexport']);
 		if (isset($msg)) $misc->printMsg($msg);
 

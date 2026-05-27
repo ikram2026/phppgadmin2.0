@@ -11,18 +11,18 @@ include_once('./classes/database/Postgres80.php');
 
 class Postgres74 extends Postgres80 {
 
-	var $major_version = 7.4;
+	public $major_version = 7.4;
 	// List of all legal privileges that can be applied to different types
 	// of objects.
-	var $privlist = array(
-		'table' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'RULE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
-		'view' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'RULE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
-		'sequence' => array('SELECT', 'UPDATE', 'ALL PRIVILEGES'),
-		'database' => array('CREATE', 'TEMPORARY', 'ALL PRIVILEGES'),
-		'function' => array('EXECUTE', 'ALL PRIVILEGES'),
-		'language' => array('USAGE', 'ALL PRIVILEGES'),
-		'schema' => array('CREATE', 'USAGE', 'ALL PRIVILEGES')
-	);
+	public $privlist = [
+		'table' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'RULE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'],
+		'view' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'RULE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'],
+		'sequence' => ['SELECT', 'UPDATE', 'ALL PRIVILEGES'],
+		'database' => ['CREATE', 'TEMPORARY', 'ALL PRIVILEGES'],
+		'function' => ['EXECUTE', 'ALL PRIVILEGES'],
+		'language' => ['USAGE', 'ALL PRIVILEGES'],
+		'schema' => ['CREATE', 'USAGE', 'ALL PRIVILEGES']
+	];
 
 
 	/**

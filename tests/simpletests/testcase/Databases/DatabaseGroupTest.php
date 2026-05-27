@@ -24,9 +24,9 @@
  */
  class DatabaseGroupTest extends GroupTest
  {
-    function DatabaseGroupTest()
+    function __construct()
     {
-        $this->GroupTest('Database group test begins.');
+        \GroupTest::__construct('Database group test begins.');
 
         /*
          * Hides it temporary.

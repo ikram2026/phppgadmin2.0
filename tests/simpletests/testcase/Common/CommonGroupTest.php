@@ -17,9 +17,9 @@ require_once('ImportTest.php');
  */
 class CommonGroupTest extends GroupTest
 {
-    function CommonGroupTest()
+    function __construct()
     {
-        $this->GroupTest('Common manipulation group test.');
+        \GroupTest::__construct('Common manipulation group test.');
         $this->addTestClass(new SecurityTest());
         $this->addTestClass(new ExportTest());
         $this->addTestClass(new ImportTest());

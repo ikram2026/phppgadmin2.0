@@ -2,7 +2,7 @@
 
 /* Farsi - by "Peyman Hooshmandi Raad" <phooshmand#gmail.com> */
 
-$ADODB_LANG_ARRAY = array (
+$ADODB_LANG_ARRAY =  [
 			'LANG'                      => 'fa',
             DB_ERROR                    => 'خطای ناشناخته',
             DB_ERROR_ALREADY_EXISTS     => 'وجود دارد',
@@ -31,5 +31,5 @@ $ADODB_LANG_ARRAY = array (
             DB_ERROR_EXTENSION_NOT_FOUND=> 'extension پیدا نشد',
             DB_ERROR_NOSUCHDB           => 'چنین بانک اطلاعاتی وجود ندارد',
             DB_ERROR_ACCESS_VIOLATION   => 'حق دسترسی ناکافی'
-);
+];
 ?>

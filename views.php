@@ -10,7 +10,7 @@
 	include_once('./libraries/lib.inc.php');
 	include_once('./classes/Gui.php');
 	
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 	if (!isset($msg)) $msg = '';
 
 	/**
@@ -92,9 +92,9 @@
 			echo "</form>\n";
 		}
 		else {
-			if (!isset($_POST['show'])) $_POST['show'] = array();
-			if (!isset($_POST['values'])) $_POST['values'] = array();
-			if (!isset($_POST['nulls'])) $_POST['nulls'] = array();
+			if (!isset($_POST['show'])) $_POST['show'] = [];
+			if (!isset($_POST['values'])) $_POST['values'] = [];
+			if (!isset($_POST['nulls'])) $_POST['nulls'] = [];
 			
 			// Verify that they haven't supplied a value for unary operators
 			foreach ($_POST['ops'] as $k => $v) {
@@ -104,7 +104,7 @@
 				}
 			}
 	
-			if (sizeof($_POST['show']) == 0)
+			if (count($_POST['show']) == 0)
 				doSelectRows(true, $lang['strselectneedscol']);
 			else {
 				// Generate query SQL
@@ -213,7 +213,7 @@
 			$misc->printTitle($lang['strcreateviewwiz'], 'pg.view.create');
 			$misc->printMsg($msg);
 			
-			$tblCount = sizeof($_POST['formTables']);
+			$tblCount = count($_POST['formTables']);
 			//unserialize our schema/table information and store in arrSelTables
 			for ($i = 0; $i < $tblCount; $i++) {
 				$arrSelTables[] = unserialize($_POST['formTables'][$i]);
@@ -225,7 +225,7 @@
 			$rsLinkKeys = $data->getLinkingKeys($arrSelTables);
 			$linkCount = $rsLinkKeys->recordCount() > $tblCount ? $rsLinkKeys->recordCount() : $tblCount;
 			
-			$arrFields = array(); //array that will hold all our table/field names
+			$arrFields = []; //array that will hold all our table/field names
 			
 			//if we have schemas we need to specify the correct schema for each table we're retrieiving
 			//with getTableAttributes
@@ -237,10 +237,10 @@
 				
 				$attrs = $data->getTableAttributes($arrSelTables[$i]['tablename']);
 				while (!$attrs->EOF) {
-					$arrFields["{$arrSelTables[$i]['schemaname']}.{$arrSelTables[$i]['tablename']}.{$attrs->fields['attname']}"] = serialize(array(
+					$arrFields["{$arrSelTables[$i]['schemaname']}.{$arrSelTables[$i]['tablename']}.{$attrs->fields['attname']}"] = serialize([
 						'schemaname' => $arrSelTables[$i]['schemaname'], 
 						'tablename' => $arrSelTables[$i]['tablename'], 
-						'fieldname' => $attrs->fields['attname']) 
+						'fieldname' => $attrs->fields['attname']] 
 					);
 					$attrs->moveNext();
 				}
@@ -284,8 +284,8 @@
 				echo "<tr>\n<td class=\"$rowClass\">\n";
 				
 				if (!$rsLinkKeys->EOF) {
-					$curLeftLink = htmlspecialchars(serialize(array('schemaname' => $rsLinkKeys->fields['p_schema'], 'tablename' => $rsLinkKeys->fields['p_table'], 'fieldname' => $rsLinkKeys->fields['p_field']) ) );
-					$curRightLink = htmlspecialchars(serialize(array('schemaname' => $rsLinkKeys->fields['f_schema'], 'tablename' => $rsLinkKeys->fields['f_table'], 'fieldname' => $rsLinkKeys->fields['f_field']) ) );
+					$curLeftLink = htmlspecialchars(serialize(['schemaname' => $rsLinkKeys->fields['p_schema'], 'tablename' => $rsLinkKeys->fields['p_table'], 'fieldname' => $rsLinkKeys->fields['p_field']] ) );
+					$curRightLink = htmlspecialchars(serialize(['schemaname' => $rsLinkKeys->fields['f_schema'], 'tablename' => $rsLinkKeys->fields['f_table'], 'fieldname' => $rsLinkKeys->fields['f_field']] ) );
 					$rsLinkKeys->moveNext();
 				}
 				else {
@@ -302,7 +302,7 @@
 			echo "</table>\n<br />\n";
 			
 			// Build list of available operators (infix only)
-			$arrOperators = array();
+			$arrOperators = [];
 			foreach ($data->selectOps as $k => $v) {
 				if ($v == 'i') $arrOperators[$k] = $k;
 			}
@@ -352,9 +352,9 @@
 		echo "<tr><th class=\"data\">{$lang['strtables']}</th></tr>";		
 		echo "<tr>\n<td class=\"data1\">\n";		
 		
-		$arrTables = array();
+		$arrTables = [];
 		while (!$tables->EOF) {
-			$arrTmp = array();
+			$arrTmp = [];
 			$arrTmp['schemaname'] = $tables->fields['nspname'];
 			$arrTmp['tablename'] = $tables->fields['relname'];
 			$arrTables[$tables->fields['nspname'] . '.' . $tables->fields['relname']] = serialize($arrTmp);
@@ -443,7 +443,7 @@
 			$selFields = '';
 
 			if (! empty($_POST['dblFldMeth']) )
-				$tmpHsh = array();
+				$tmpHsh = [];
 
 			foreach ($_POST['formFields'] as $curField) {
 				$arrTmp = unserialize($curField);
@@ -469,16 +469,16 @@
 			// If we have links, out put the JOIN ... ON statements
 			if (is_array($_POST['formLink']) ) {
 				// Filter out invalid/blank entries for our links
-				$arrLinks = array();
+				$arrLinks = [];
 				foreach ($_POST['formLink'] as $curLink) {
 					if (strlen($curLink['leftlink']) && strlen($curLink['rightlink']) && strlen($curLink['operator'])) {
 						$arrLinks[] = $curLink;
 					}
 				}				
 				// We must perform some magic to make sure that we have a valid join order
-				$count = sizeof($arrLinks);
-				$arrJoined = array();
-				$arrUsedTbls = array();								
+				$count = count($arrLinks);
+				$arrJoined = [];
+				$arrUsedTbls = [];								
 
 				// If we have at least one join condition, output it
 				if ($count > 0) {
@@ -498,7 +498,7 @@
 								
 								// Make sure for multi-column foreign keys that we use a table alias tables joined to more than once
 								// This can (and should be) more optimized for multi-column foreign keys
-								$adj_tbl2 = in_array($tbl2, $arrUsedTbls) ? "$tbl2 AS alias_ppa_" . mktime() : $tbl2;
+								$adj_tbl2 = in_array($tbl2, $arrUsedTbls) ? "$tbl2 AS alias_ppa_" . time() : $tbl2;
 								
 								$linkFields .= strlen($linkFields) ? "{$curLink['operator']} $adj_tbl2 ON (\"{$arrLeftLink['schemaname']}\".\"{$arrLeftLink['tablename']}\".\"{$arrLeftLink['fieldname']}\" = \"{$arrRightLink['schemaname']}\".\"{$arrRightLink['tablename']}\".\"{$arrRightLink['fieldname']}\") " 
 									: "$tbl1 {$curLink['operator']} $adj_tbl2 ON (\"{$arrLeftLink['schemaname']}\".\"{$arrLeftLink['tablename']}\".\"{$arrLeftLink['fieldname']}\" = \"{$arrRightLink['schemaname']}\".\"{$arrRightLink['tablename']}\".\"{$arrRightLink['fieldname']}\") ";
@@ -563,57 +563,57 @@
 		
 		$views = $data->getViews();
 	
-		$columns = array(
-			'view' => array(
+		$columns = [
+			'view' => [
 				'title'	=> $lang['strview'],
 				'field'	=> field('relname'),
 				'url' => "redirect.php?subject=view&amp;{$misc->href}&amp;",
-				'vars'  => array('view' => 'relname'),
-			),
-			'owner' => array(
+				'vars'  => ['view' => 'relname'],
+			],
+			'owner' => [
 				'title'	=> $lang['strowner'],
 				'field'	=> field('relowner'),
-			),
-			'actions' => array(
+			],
+			'actions' => [
 				'title'	=> $lang['stractions'],
-			),
-			'comment' => array(
+			],
+			'comment' => [
 				'title'	=> $lang['strcomment'],
 				'field'	=> field('relcomment'),
-			),
-		);
+			],
+		];
 		
-		$actions = array(
-			'multiactions' => array(
-				'keycols' => array('view' => 'relname'),
+		$actions = [
+			'multiactions' => [
+				'keycols' => ['view' => 'relname'],
 				'url' => 'views.php',
-			),
-			'browse' => array(
+			],
+			'browse' => [
 				'content' => $lang['strbrowse'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'display.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confselectrows',
 							'subject' => 'view',
 							'return' => 'schema',
 							'view' => field('relname')
-						)
-					)
-				)
-			),
-			'select' => array(
+						]
+					]
+				]
+			],
+			'select' => [
 				'content' => $lang['strselect'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'views.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confselectrows',
 							'view' => field('relname')
-						)
-					)
-				)
-			),
+						]
+					]
+				]
+			],
 
 // Insert is possible if the relevant rule for the view has been created.
 //			'insert' => array(
@@ -622,65 +622,65 @@
 //				'vars'	=> array('view' => 'relname'),
 			//			),
 
-			'alter' => array(
+			'alter' => [
 				'content' => $lang['stralter'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'viewproperties.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_alter',
 							'view' => field('relname')
-						)
-					)
-				)
-			),
-			'drop' => array(
+						]
+					]
+				]
+			],
+			'drop' => [
 				'multiaction' => 'confirm_drop',
 				'content' => $lang['strdrop'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'views.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_drop',
 							'view' => field('relname')
-						)
-					)
-				)
-			),
-		);
+						]
+					]
+				]
+			],
+		];
 		
 		$misc->printTable($views, $columns, $actions, 'views-views',  $lang['strnoviews']);
 		
-		$navlinks = array (
-			'create' => array (
-				'attr'=> array (
-					'href' => array (
+		$navlinks =  [
+			'create' =>  [
+				'attr'=>  [
+					'href' =>  [
 					'url' => 'views.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'create',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['strcreateview']
-			),
-			'createwiz' => array (
-				'attr'=> array (
-					'href' => array (
+			],
+			'createwiz' =>  [
+				'attr'=>  [
+					'href' =>  [
 					'url' => 'views.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'wiz_create',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['strcreateviewwiz']
-			)
-		);
+			]
+		];
 		$misc->printNavLinks($navlinks, 'views-views', get_defined_vars());
 
 	}
@@ -695,19 +695,19 @@
 		
 		$reqvars = $misc->getRequestVars('view');
 		
-		$attrs = array(
+		$attrs = [
 			'text'   => field('relname'),
 			'icon'   => 'View',
-			'iconAction' => url('display.php', $reqvars, array('view' => field('relname'))),
+			'iconAction' => url('display.php', $reqvars, ['view' => field('relname')]),
 			'toolTip'=> field('relcomment'),
-			'action' => url('redirect.php',	$reqvars, array('view' => field('relname'))),
+			'action' => url('redirect.php',	$reqvars, ['view' => field('relname')]),
 			'branch' => url('views.php', $reqvars,
-				array (
+				 [
 					'action' => 'subtree',
 					'view' => field('relname')
-				)
+				]
 			)
-		);
+		];
 		
 		$misc->printTree($views, $attrs, 'views');
 		exit;
@@ -720,19 +720,19 @@
 		$items = $misc->adjustTabsForTree($tabs);
 		$reqvars = $misc->getRequestVars('view');
 
-		$attrs = array(
+		$attrs = [
 			'text'   => field('title'),
 			'icon'   => field('icon'),
-			'action' => url(field('url'),	$reqvars, field('urlvars'),	array('view' => $_REQUEST['view'])),
+			'action' => url(field('url'),	$reqvars, field('urlvars'),	['view' => $_REQUEST['view']]),
 			'branch' => ifempty( 
 				field('branch'), '', url(field('url'), field('urlvars'), $reqvars,
-					array(
+					[
 						'action' => 'tree',
 						'view' => $_REQUEST['view']
-					)
+					]
 				)
 			),
-		);
+		];
 
 		$misc->printTree($items, $attrs, 'view');
 		exit;

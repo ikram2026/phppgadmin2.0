@@ -7,10 +7,10 @@
 
 	// List of themes
 	
-	$appThemes = array(
+	$appThemes = [
 		'default' => 'Default',
 		'cappuccino' => 'Cappuccino',
 		'gotar' => 'Blue/Green',
 		'bootstrap' => 'Bootstrap3'
-	);
+	];
 ?>

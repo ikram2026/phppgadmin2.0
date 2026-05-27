@@ -11,10 +11,10 @@ include_once('./libraries/adodb/adodb.inc.php');
 
 class ADODB_base {
 
-	var $conn;
+	public $conn;
 	
 	// The backend platform.  Set to UNKNOWN by default.
-	var $platform = 'UNKNOWN';
+	public $platform = 'UNKNOWN';
 
 	/**
 	 * Base constructor
@@ -168,7 +168,7 @@ class ADODB_base {
 		$this->fieldClean($table);
 
 		// Build clause
-		if (sizeof($vars) > 0) {
+		if (count($vars) > 0) {
 			$fields = '';
 			$values = '';
 			foreach($vars as $key => $value) {
@@ -208,7 +208,7 @@ class ADODB_base {
 	 * @return -2 if a referential constraint is violated
 	 * @return -3 on no rows deleted
 	 */
-	function update($table, $vars, $where, $nulls = array()) {
+	function update($table, $vars, $where, $nulls = []) {
 		$this->fieldClean($table);
 
 		$setClause = '';
@@ -313,7 +313,7 @@ class ADODB_base {
 
 		// Pick out array entries by carefully parsing.  This is necessary in order
 		// to cope with double quotes and commas, etc.
-		$elements = array();
+		$elements = [];
 		$i = $j = 0;		
 		$in_quotes = false;
 		while ($i < strlen($arr)) {
@@ -334,7 +334,7 @@ class ADODB_base {
 
 		// Do one further loop over the elements array to remote double quoting
 		// and escaping of double quotes and backslashes
-		for ($i = 0; $i < sizeof($elements); $i++) {
+		for ($i = 0; $i < count($elements); $i++) {
 			$v = $elements[$i];
 			if (strpos($v, '"') === 0) {
 				$v = substr($v, 1, strlen($v) - 2);

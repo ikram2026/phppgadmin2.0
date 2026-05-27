@@ -9,7 +9,7 @@
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
 	
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 	if (!isset($msg)) $msg = '';
 
 	/**
@@ -37,22 +37,22 @@
 			case 'c':
 				$attrs = $data->getTableAttributes($_REQUEST['type']);
 				
-				$columns = array(
-					'field' => array(
+				$columns = [
+					'field' => [
 						'title' => $lang['strfield'],
 						'field' => field('attname'),
-					),
-					'type' => array(
+					],
+					'type' => [
 						'title' => $lang['strtype'],
 						'field' => field('+type'),
-					),
-					'comment' => array(
+					],
+					'comment' => [
 						'title' => $lang['strcomment'],
 						'field' => field('comment'),
-					)
-				);
+					]
+				];
 				
-				$actions = array();
+				$actions = [];
 				
 				$misc->printTable($attrs, $columns, $actions, 'types-properties', null, 'attPre');
 				
@@ -85,19 +85,19 @@
 				echo "</table>\n";
 			}
 
-			$misc->printNavLinks(array ('showall' => array (
-					'attr'=> array (
-						'href' => array (
+			$misc->printNavLinks( ['showall' =>  [
+					'attr'=>  [
+						'href' =>  [
 						'url' => 'types.php',
-							'urlvars' => array (
+							'urlvars' =>  [
 								'server' => $_REQUEST['server'],
 								'database' => $_REQUEST['database'],
 								'schema' => $_REQUEST['schema'],
-							)
-						)
-					),
+							]
+						]
+					],
 					'content' => $lang['strshowalltypes']
-				)), 'types-properties', get_defined_vars());
+				]], 'types-properties', get_defined_vars());
 		} else
 			doDefault($lang['strinvalidparam']);
 	}
@@ -540,104 +540,104 @@
 		
 		$types = $data->getTypes();
 
-		$columns = array(
-			'type' => array(
+		$columns = [
+			'type' => [
 				'title' => $lang['strtype'],
 				'field' => field('typname'),
 				'url'   => "types.php?action=properties&amp;{$misc->href}&amp;",
-				'vars'  => array('type' => 'basename'),
-			),
-			'owner' => array(
+				'vars'  => ['type' => 'basename'],
+			],
+			'owner' => [
 				'title' => $lang['strowner'],
 				'field' => field('typowner'),
-			),
-			'flavour' => array(
+			],
+			'flavour' => [
 				'title' => $lang['strflavor'],
 				'field' => field('typtype'),
 				'type'  => 'verbatim',
-				'params'=> array(
-					'map' => array(
+				'params'=> [
+					'map' => [
 						'b' => $lang['strbasetype'],
 						'c' => $lang['strcompositetype'],
 						'd' => $lang['strdomain'],
 						'p' => $lang['strpseudotype'],
 						'e' => $lang['strenum'],
-					),
+					],
 					'align' => 'center',
-				),
-			),
-			'actions' => array(
+				],
+			],
+			'actions' => [
 				'title' => $lang['stractions'],
-			),
-			'comment' => array(
+			],
+			'comment' => [
 				'title' => $lang['strcomment'],
 				'field' => field('typcomment'),
-			),
-		);
+			],
+		];
 		
 		if (!isset($types->fields['typtype'])) unset($columns['flavour']);
 
-		$actions = array(
-			'drop' => array(
+		$actions = [
+			'drop' => [
 				'content' => $lang['strdrop'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'types.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_drop',
 							'type' => field('basename')
-						)
-					)
-				)
-			),
-		);
+						]
+					]
+				]
+			],
+		];
 		
 		$misc->printTable($types, $columns, $actions, 'types-types', $lang['strnotypes']);
 
-		$navlinks = array (
-			'create' => array (
-				'attr'=> array (
-					'href' => array (
+		$navlinks =  [
+			'create' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'types.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'create',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['strcreatetype']
-			),
-			'createcomp' => array (
-				'attr'=> array (
-					'href' => array (
+			],
+			'createcomp' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'types.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'create_comp',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['strcreatecomptype']
-			),
-			'createenum' => array (
-				'attr'=> array (
-					'href' => array(
+			],
+			'createenum' =>  [
+				'attr'=>  [
+					'href' => [
 						'url' => 'types.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'create_enum',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['strcreateenumtype']
-			)
-		);
+			]
+		];
 
 		if (! $data->hasEnumTypes()) {
 			unset($navlinks['enum']);
@@ -656,18 +656,18 @@
 		
 		$reqvars = $misc->getRequestVars('type');
 		
-		$attrs = array(
+		$attrs = [
 			'text'   => field('typname'),
 			'icon'   => 'Type',
 			'toolTip'=> field('typcomment'),
 			'action' => url('types.php',
 							$reqvars,
-							array(
+							[
 								'action' => 'properties',
 								'type'   => field('basename')
-							)
+							]
 						)
-		);
+		];
 		
 		$misc->printTree($types, $attrs, 'types');
 		exit;

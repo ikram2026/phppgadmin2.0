@@ -1,5 +1,5 @@
 <?php
-	$subject = isset($_REQUEST['subject']) ? $_REQUEST['subject'] : 'root'; 
+	$subject = $_REQUEST['subject'] ?? 'root'; 
 	
 	if ($subject == 'root')
 		$_no_db_connection = true;
@@ -10,7 +10,7 @@
 	
 	// Load query vars into superglobal arrays
 	if (isset($url['urlvars'])) {
-		$urlvars = array();
+		$urlvars = [];
 
 		foreach($url['urlvars'] as $k => $urlvar) {
 			$urlvars[$k] = value($urlvar, $_REQUEST);

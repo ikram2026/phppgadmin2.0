@@ -1,6 +1,6 @@
 <?php
 
-$ADODB_LANG_ARRAY = array (
+$ADODB_LANG_ARRAY =  [
 	'LANG'                      => 'fr',
 	DB_ERROR                    => 'erreur inconnue',
 	DB_ERROR_ALREADY_EXISTS     => 'existe d&eacute;j&agrave;',
@@ -29,5 +29,5 @@ $ADODB_LANG_ARRAY = array (
 	DB_ERROR_EXTENSION_NOT_FOUND=> 'extension non trouv&eacute;e',
 	DB_ERROR_NOSUCHDB           => 'base de donn&eacute;es inconnue',
 	DB_ERROR_ACCESS_VIOLATION   => 'droits insuffisants'
-);
+];
 ?>

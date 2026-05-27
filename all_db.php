@@ -9,7 +9,7 @@
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
 
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 	if (!isset($msg)) $msg = '';
 
 	/**
@@ -34,7 +34,7 @@
 				// Fetch all users
 
 				$rs = $data->getDatabaseOwner($_REQUEST['alterdatabase']);
-				$owner = isset($rs->fields['usename']) ? $rs->fields['usename'] : '';
+				$owner = $rs->fields['usename'] ?? '';
 				$users = $data->getUsers();
 
 				echo "<tr><th class=\"data left required\">{$lang['strowner']}</th>\n";
@@ -49,7 +49,7 @@
 			}
 			if ($data->hasSharedComments()){
 				$rs = $data->getDatabaseComment($_REQUEST['alterdatabase']);
-				$comment = isset($rs->fields['description']) ? $rs->fields['description'] : '';
+				$comment = $rs->fields['description'] ?? '';
 				echo "<tr><th class=\"data left\">{$lang['strcomment']}</th>\n";
 				echo "<td class=\"data1\">";
 				echo "<textarea rows=\"3\" cols=\"32\" name=\"dbcomment\">",
@@ -356,94 +356,94 @@
 
 		$databases = $data->getDatabases();
 
-		$columns = array(
-			'database' => array(
+		$columns = [
+			'database' => [
 				'title' => $lang['strdatabase'],
 				'field' => field('datname'),
 				'url'   => "redirect.php?subject=database&amp;{$misc->href}&amp;",
-				'vars'  => array('database' => 'datname'),
-			),
-			'owner' => array(
+				'vars'  => ['database' => 'datname'],
+			],
+			'owner' => [
 				'title' => $lang['strowner'],
 				'field' => field('datowner'),
-			),
-			'encoding' => array(
+			],
+			'encoding' => [
 				'title' => $lang['strencoding'],
 				'field' => field('datencoding'),
-			),
-			'lc_collate' => array(
+			],
+			'lc_collate' => [
 				'title' => $lang['strcollation'],
 				'field' => field('datcollate'),
-			),
-			'lc_ctype' => array(
+			],
+			'lc_ctype' => [
 				'title' => $lang['strctype'],
 				'field' => field('datctype'),
-			),
-			'tablespace' => array(
+			],
+			'tablespace' => [
 				'title' => $lang['strtablespace'],
 				'field' => field('tablespace'),
-			),
-			'dbsize' => array(
+			],
+			'dbsize' => [
 				'title' => $lang['strsize'],
 				'field' => field('dbsize'),
 				'type' => 'prettysize',
-			),
-			'actions' => array(
+			],
+			'actions' => [
 				'title' => $lang['stractions'],
-			),
-			'comment' => array(
+			],
+			'comment' => [
 				'title' => $lang['strcomment'],
 				'field' => field('datcomment'),
-			),
-		);
+			],
+		];
 
-		$actions = array(
-			'multiactions' => array(
-			    'keycols' => array('database' => 'datname'),
+		$actions = [
+			'multiactions' => [
+			    'keycols' => ['database' => 'datname'],
 			    'url' => 'all_db.php',
 			    'default' => null,
-			),
-			'drop' => array(
+			],
+			'drop' => [
 			    'content' => $lang['strdrop'],
-			    'attr'=> array (
-				'href' => array (
+			    'attr'=>  [
+				'href' =>  [
 				    'url' => 'all_db.php',
-				    'urlvars' => array (
+				    'urlvars' =>  [
 					'subject' => 'database',
 					'action' => 'confirm_drop',
 					'dropdatabase' => field('datname')
-				    )
-				)
-			    ),
+				    ]
+				]
+			    ],
 			    'multiaction' => 'confirm_drop',
-			),
-			'privileges' => array(
+			],
+			'privileges' => [
 			    'content' => $lang['strprivileges'],
-			    'attr'=> array (
-				'href' => array (
+			    'attr'=>  [
+				'href' =>  [
 				    'url' => 'privileges.php',
-				    'urlvars' => array (
+				    'urlvars' =>  [
 					'subject' => 'database',
 					'database' => field('datname')
-				    )
-				)
-			    )
-			)
-		);
+				    ]
+				]
+			    ]
+			]
+		];
 		if ($data->hasAlterDatabase() ) {
-		    $actions['alter'] = array(
+		    $actions['alter'] = [
 			'content' => $lang['stralter'],
-			'attr'=> array (
-			    'href' => array (
+			'attr'=>  [
+			    'href' =>  [
 				'url' => 'all_db.php',
-				'urlvars' => array (
+				'urlvars' =>  [
 				    'subject' => 'database',
 				    'action' => 'confirm_alter',
 				    'alterdatabase' => field('datname')
-				)
-			    )
-			)
-		    );
+				]
+			    ]
+			]
+		    ];
 		}
 
 		if (!$data->hasTablespaces()) unset($columns['tablespace']);
@@ -453,20 +453,20 @@
 
 		$misc->printTable($databases, $columns, $actions, 'all_db-databases', $lang['strnodatabases']);
 
-		$navlinks = array (
-		    'create' => array (
-			'attr'=> array (
-			    'href' => array (
+		$navlinks =  [
+		    'create' =>  [
+			'attr'=>  [
+			    'href' =>  [
 				'url' => 'all_db.php',
-				'urlvars' => array (
+				'urlvars' =>  [
 				    'action' => 'create',
 				    'server' => $_REQUEST['server']
-				)
-			    )
-			),
+				]
+			    ]
+			],
 			'content' => $lang['strcreatedatabase']
-		    )
-		);
+		    ]
+		];
 		$misc->printNavLinks($navlinks, 'all_db-databases', get_defined_vars());
 	}
 
@@ -485,14 +485,14 @@
    }
 
 
-		$attrs = array(
+		$attrs = [
 			'text'   => field('datname'),
-			'action' => url('redirect.php', $reqvars, array('subject' => 'database', 'database' => field('datname'))),
+			'action' => url('redirect.php', $reqvars, ['subject' => 'database', 'database' => field('datname')]),
 			'icon'   => 'Database',
 			//'branch' => url('all_db.php', $reqvars, array('action' => 'tree', 'database' => field('datname')))
 			// phpPgAdmin 2.0: Route database nodes to schemas tree to prevent recursive loops
-            'branch' => url('schemas.php', $reqvars, array('action' => 'tree', 'database' => field('datname')))
-		);
+            'branch' => url('schemas.php', $reqvars, ['action' => 'tree', 'database' => field('datname')])
+		];
 
 		// Clean modern array datatypes for the AJAX Javascript tree parser
 		if (is_object($databases) && isset($databases->recordSet)) {

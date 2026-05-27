@@ -10,22 +10,22 @@ include_once('./classes/database/Postgres82.php');
 
 class Postgres81 extends Postgres82 {
 
-	var $major_version = 8.1;
+	public $major_version = 8.1;
 	// List of all legal privileges that can be applied to different types
 	// of objects.
-	var $privlist = array(
-		'table' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'RULE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
-		'view' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'RULE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
-		'sequence' => array('SELECT', 'UPDATE', 'ALL PRIVILEGES'),
-		'database' => array('CREATE', 'TEMPORARY', 'ALL PRIVILEGES'),
-		'function' => array('EXECUTE', 'ALL PRIVILEGES'),
-		'language' => array('USAGE', 'ALL PRIVILEGES'),
-		'schema' => array('CREATE', 'USAGE', 'ALL PRIVILEGES'),
-		'tablespace' => array('CREATE', 'ALL PRIVILEGES')
-	);
+	public $privlist = [
+		'table' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'RULE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'],
+		'view' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'RULE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'],
+		'sequence' => ['SELECT', 'UPDATE', 'ALL PRIVILEGES'],
+		'database' => ['CREATE', 'TEMPORARY', 'ALL PRIVILEGES'],
+		'function' => ['EXECUTE', 'ALL PRIVILEGES'],
+		'language' => ['USAGE', 'ALL PRIVILEGES'],
+		'schema' => ['CREATE', 'USAGE', 'ALL PRIVILEGES'],
+		'tablespace' => ['CREATE', 'ALL PRIVILEGES']
+	];
 	// List of characters in acl lists and the privileges they
 	// refer to.
-	var $privmap = array(
+	public $privmap = [
 		'r' => 'SELECT',
 		'w' => 'UPDATE',
 		'a' => 'INSERT',
@@ -37,9 +37,9 @@ class Postgres81 extends Postgres82 {
 		'U' => 'USAGE',
 		'C' => 'CREATE',
 		'T' => 'TEMPORARY'
-	);
+	];
 	// Array of allowed index types
-	var $typIndexes = array('BTREE', 'RTREE', 'GIST', 'HASH');
+	public $typIndexes = ['BTREE', 'RTREE', 'GIST', 'HASH'];
 
 	/**
 	 * Constructor

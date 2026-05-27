@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'name' => 'phppgadmin/phppgadmin',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => '04e92967111dac571004727f2b323bae3b4f16db',
+        'type' => 'application',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        'phppgadmin/phppgadmin' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => '04e92967111dac571004727f2b323bae3b4f16db',
+            'type' => 'application',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'phpstan/phpstan' => array(
+            'pretty_version' => '2.1.56',
+            'version' => '2.1.56.0',
+            'reference' => '93a603c9fc3be8c3c93bbc8d22170ad766685537',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpstan/phpstan',
+            'aliases' => array(),
+            'dev_requirement' => true,
+        ),
+        'rector/rector' => array(
+            'pretty_version' => '2.4.5',
+            'version' => '2.4.5.0',
+            'reference' => 'cbd86024be5014d3c14d9f0b3f7aae8ecbffd62c',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../rector/rector',
+            'aliases' => array(),
+            'dev_requirement' => true,
+        ),
+    ),
+);

@@ -8,7 +8,7 @@
 		$offset = " OFFSET 0";
 	}
 
-	$keynames = array();
+	$keynames = [];
 	foreach ($_POST['fkeynames'] as $k => $v) {
 		$fkeynames[$k] = html_entity_decode($v, ENT_QUOTES);
 	}
@@ -50,11 +50,11 @@
 				$finfo = $res->fetchField($j++);
 				if (in_array($n, $fkeynames))
 					echo "<td><a href=\"javascript:void(0)\" class=\"fkval\" name=\"{$keyspos[$n]}\">",
-						$misc->printVal($v, $finfo->type, array('clip' => 'collapsed')),
+						$misc->printVal($v, $finfo->type, ['clip' => 'collapsed']),
 						"</a></td>";
 				else
 					echo "<td><a href=\"javascript:void(0)\">",
-						$misc->printVal($v, $finfo->type, array('clip' => 'collapsed')),
+						$misc->printVal($v, $finfo->type, ['clip' => 'collapsed']),
 						"</a></td>";
 			}
 			echo "</tr>\n";

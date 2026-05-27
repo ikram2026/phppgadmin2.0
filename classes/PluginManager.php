@@ -9,8 +9,8 @@ class PluginManager {
 	/**
 	 * Attributes
 	 */
-	private $plugins_list = array();
-	private $available_hooks = array(
+	private $plugins_list = [];
+	private $available_hooks = [
 		'head',
 		'toplinks',
 		'tabs',
@@ -19,9 +19,9 @@ class PluginManager {
 		'actionbuttons',
 		'tree',
 		'logout'
-	);
-	private $actions = array();
-	private $hooks = array();
+	];
+	private $actions = [];
+	private $hooks = [];
 
 	/**
 	 * Register the plugins
@@ -84,10 +84,7 @@ class PluginManager {
 	}
 
 	function getPlugin($plugin) {
-		if (isset($this->plugins_list[$plugin]))
-			return $this->plugins_list[$plugin];
-
-		return null;
+		return $this->plugins_list[$plugin] ?? null;
 	}
 
 	/**
@@ -101,7 +98,7 @@ class PluginManager {
 				$plugin = $this->plugins_list[$plugin_name];
 				foreach ($functions as $function) {
 					if (method_exists($plugin, $function)) {
-						call_user_func(array($plugin, $function), $function_args);
+						call_user_func([$plugin, $function], $function_args);
 					}
 				}
 			}
@@ -125,7 +122,7 @@ class PluginManager {
 
 		// Check if the plugin's method exists and if this method is an declared action.
 		if (method_exists($plugin, $action) and in_array($action, $this->actions[$plugin_name])) {
-			call_user_func(array($plugin, $action));
+			call_user_func([$plugin, $action]);
 		}
 		else {
 			// Show an error and stop the application

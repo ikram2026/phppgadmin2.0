@@ -10,21 +10,21 @@ include_once('./classes/database/Postgres90.php');
 
 class Postgres84 extends Postgres90 {
 
-	var $major_version = 8.4;
+	public $major_version = 8.4;
 
 	// List of all legal privileges that can be applied to different types
 	// of objects.
-	var $privlist = array(
-  		'table' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
-  		'view' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
-  		'sequence' => array('USAGE', 'SELECT', 'UPDATE', 'ALL PRIVILEGES'),
-  		'database' => array('CREATE', 'TEMPORARY', 'CONNECT', 'ALL PRIVILEGES'),
-  		'function' => array('EXECUTE', 'ALL PRIVILEGES'),
-  		'language' => array('USAGE', 'ALL PRIVILEGES'),
-  		'schema' => array('CREATE', 'USAGE', 'ALL PRIVILEGES'),
-  		'tablespace' => array('CREATE', 'ALL PRIVILEGES'),
-		'column' => array('SELECT', 'INSERT', 'UPDATE', 'REFERENCES','ALL PRIVILEGES')
-	);
+	public $privlist = [
+  		'table' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'],
+  		'view' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'],
+  		'sequence' => ['USAGE', 'SELECT', 'UPDATE', 'ALL PRIVILEGES'],
+  		'database' => ['CREATE', 'TEMPORARY', 'CONNECT', 'ALL PRIVILEGES'],
+  		'function' => ['EXECUTE', 'ALL PRIVILEGES'],
+  		'language' => ['USAGE', 'ALL PRIVILEGES'],
+  		'schema' => ['CREATE', 'USAGE', 'ALL PRIVILEGES'],
+  		'tablespace' => ['CREATE', 'ALL PRIVILEGES'],
+		'column' => ['SELECT', 'INSERT', 'UPDATE', 'REFERENCES','ALL PRIVILEGES']
+	];
 
 	/**
 	 * Constructor

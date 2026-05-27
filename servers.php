@@ -10,7 +10,7 @@
 	$_no_db_connection = true;
 	include_once('./libraries/lib.inc.php');
 	
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 	if (!isset($msg)) $msg = '';
 	
 		function doLogout() {
@@ -38,7 +38,7 @@
 			unset($_SESSION['webdbLogin'][$logoutTarget]);
 		}
 
-		doDefault(sprintf($lang['strlogoutmsg'], isset($server_info['desc']) ? $server_info['desc'] : 'PostgreSQL Server'));
+		doDefault(sprintf($lang['strlogoutmsg'], $server_info['desc'] ?? 'PostgreSQL Server'));
 
 		$_reload_browser = true;
 	}
@@ -50,19 +50,19 @@
 		
 		$misc->printTabs('root','servers');
 		$misc->printMsg($msg);
-		$group = isset($_GET['group']) ? $_GET['group'] : false;
+		$group = $_GET['group'] ?? false;
 		
 		$groups = $misc->getServersGroups(true,$group);
 
-		$columns = array(
-			'group' => array(
+		$columns = [
+			'group' => [
 				'title' => $lang['strgroup'],
 				'field' => field('desc'),
 				'url' => 'servers.php?',
-				'vars' => array('group' => 'id'),
-			),
-		);
-		$actions = array();
+				'vars' => ['group' => 'id'],
+			],
+		];
+		$actions = [];
 
 		if (($group !== false) and (isset($conf['srv_groups'][$group])) and ($groups->recordCount()>0)) {
 			$misc->printTitle(sprintf($lang['strgroupgroups'],htmlentities($conf['srv_groups'][$group]['desc'], ENT_QUOTES, 'UTF-8')));
@@ -77,44 +77,44 @@
 			return $actions;
 		}
 		
-		$columns = array(
-			'server' => array(
+		$columns = [
+			'server' => [
 				'title' => $lang['strserver'],
 				'field' => field('desc'),
 				'url'   => "redirect.php?subject=server&amp;",
-				'vars'  => array('server' => 'id'),
-			),
-			'host' => array(
+				'vars'  => ['server' => 'id'],
+			],
+			'host' => [
 				'title' => $lang['strhost'],
 				'field' => field('host'),
-			),
-			'port' => array(
+			],
+			'port' => [
 				'title' => $lang['strport'],
 				'field' => field('port'),
-			),
-			'username' => array(
+			],
+			'username' => [
 				'title' => $lang['strusername'],
 				'field' => field('username'),
-			),
-			'actions' => array(
+			],
+			'actions' => [
 				'title' => $lang['stractions'],
-			),
-		);
+			],
+		];
 		
-		$actions = array(
-			'logout' => array(
+		$actions = [
+			'logout' => [
 				'content' => $lang['strlogout'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'servers.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'logout',
 							'logoutServer' => field('id')
-						)
-					)
-				)
-			),
-		);
+						]
+					]
+				]
+			],
+		];
 
 		if (($group !== false) and isset($conf['srv_groups'][$group])) {
 			$misc->printTitle(sprintf($lang['strgroupservers'],htmlentities($conf['srv_groups'][$group]['desc'], ENT_QUOTES, 'UTF-8')));
@@ -127,8 +127,8 @@
 	function doTree() {
 		global $misc, $conf;
 
-		$nodes = array();
-		$group_id = isset($_GET['group']) ? $_GET['group'] : false;
+		$nodes = [];
+		$group_id = $_GET['group'] ?? false;
 
 		/* root with srv_groups */
 		if (isset($conf['srv_groups']) and count($conf['srv_groups']) > 0
@@ -151,7 +151,7 @@
 		
 		$reqvars = $misc->getRequestVars('server');
 		
-		$attrs = array(
+		$attrs = [
 			'text'   => field('desc'),
 			
 			// Show different icons for logged in/out
@@ -164,7 +164,7 @@
 			// Only create a branch url if the user has
 			// logged into the server.
 			'branch' => field('branch'),
-		);
+		];
 		
 		$misc->printTree($nodes, $attrs, 'servers');
 		exit;

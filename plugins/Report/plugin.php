@@ -9,7 +9,7 @@ class Report extends Plugin {
 	 */
 	protected $name = 'Report';
 	protected $lang;
-	protected $conf = array();
+	protected $conf = [];
 	protected $_reportsdb = null;
 
 	/**
@@ -72,11 +72,11 @@ class Report extends Plugin {
 	 * @return $hooks
 	 */
 	function get_hooks() {
-		$hooks = array(
-			'tabs' => array('add_plugin_tabs'),
-			'trail' => array('add_plugin_trail'),
-			'navlinks' => array('plugin_navlinks')
-		);
+		$hooks = [
+			'tabs' => ['add_plugin_tabs'],
+			'trail' => ['add_plugin_trail'],
+			'navlinks' => ['plugin_navlinks']
+		];
 		return $hooks;
 	}
 
@@ -92,7 +92,7 @@ class Report extends Plugin {
 	 * @return $actions
 	 */
 	function get_actions() {
-		$actions = array(
+		$actions = [
 			'save_edit',
 			'edit',
 			'properties',
@@ -102,7 +102,7 @@ class Report extends Plugin {
 			'confirm_drop',
 			'execute',
 			'default_action'
-		);
+		];
 		return $actions;
 	}
 
@@ -116,31 +116,31 @@ class Report extends Plugin {
 		$tabs = &$plugin_functions_parameters['tabs'];
 
 		if ($plugin_functions_parameters['section'] == 'server') {
-			$tabs['report_plugin'] = array (
+			$tabs['report_plugin'] =  [
 				'title' => $this->lang['strplugindescription'],
 				'url' => 'plugin.php',
-				'urlvars' => array(
+				'urlvars' => [
 					'subject' => 'server',
 					'action' => 'default_action',
 					'plugin' => $this->name
-				),
+				],
 				'hide' => false,
 				'icon' => $this->icon('Report')
-			);
+			];
 		}
 
 		if ($plugin_functions_parameters['section'] == 'report') {
-			$tabs['report_plugin'] = array (
+			$tabs['report_plugin'] =  [
 				'title' => $this->lang['strplugindescription'],
 				'url' => 'plugin.php',
-				'urlvars' => array(
+				'urlvars' => [
 					'subject' => 'server',
 					'action' => 'default_action',
 					'plugin' => $this->name
-				),
+				],
 				'hide' => false,
 				'icon' => $this->icon('Report')
-			);
+			];
 		}
 	}
 
@@ -163,19 +163,19 @@ class Report extends Plugin {
 		}
 
 		if (isset($_REQUEST['plugin']) and $_REQUEST['plugin'] == 'Report') {
-			$url = array (
+			$url =  [
 				'url' => 'plugin.php',
-				'urlvars' => array (
+				'urlvars' =>  [
 					'plugin' => $this->name,
 					'action' => 'default_action'
-				)
-			);
-			$trail['report_plugin'] = array (
+				]
+			];
+			$trail['report_plugin'] =  [
 				'title' => $this->lang['strreport'],
 				'text' => $this->lang['strreport'],
 				'url'   => $misc->getActionUrl($url, $_REQUEST, null, false),
 				'icon' => $this->icon('Reports')
-			);
+			];
 		}
 
 		if (isset($_REQUEST['plugin'])
@@ -184,24 +184,24 @@ class Report extends Plugin {
 			and in_array($action, $this->get_actions())
 		) {
 
-			$url = array (
+			$url =  [
 				'url' => 'plugin.php',
-				'urlvars' => array (
+				'urlvars' =>  [
 					'plugin' => $this->name,
 					'action' => 'properties',
 					'report_id' => field('report_id'),
-				)
-			);
+				]
+			];
 
 			if (isset($_REQUEST['report']))
 				$url['urlvars']['report'] = field('report');
 
-			$trail['report_plugin_name'] = array (
+			$trail['report_plugin_name'] =  [
 				'title' => $this->lang['strreport'],
 				'text' => $this->lang['strreport'],
 				'url'   => $misc->getActionUrl($url, $_REQUEST, null, false),
 				'icon' => $this->icon('Report')
-			);
+			];
 
 			if (isset($_REQUEST['report']))
 				$trail['report_plugin_name']['text'] = $_REQUEST['report'];
@@ -228,20 +228,20 @@ class Report extends Plugin {
 			) {
 				/* ResultSet doesn't come from a plugin:
 				 * show a create report link. */
-				$params['navlinks']['report_link'] = array (
-					'attr'=> array (
-						'href' => array (
+				$params['navlinks']['report_link'] =  [
+					'attr'=>  [
+						'href' =>  [
 							'url' => 'plugin.php',
-							'urlvars' => array (
+							'urlvars' =>  [
 								'plugin' => $this->name,
 								'action' => 'create',
 								'server' => $_REQUEST['server'],
 								'database' => $_REQUEST['database'],
-							)
-						)
-					),
+							]
+						]
+					],
 					'content' => $this->lang['strcreatereport']
-				);
+				];
 
 				if (isset($_REQUEST['paginate']))
 				$params['navlinks']['report_link']['attr']['href']['urlvars']['paginate']
@@ -261,10 +261,10 @@ class Report extends Plugin {
 							= $_REQUEST[$_REQUEST['subject']];
 
 						$params['navlinks']['report_link']['attr']['href']['urlvars']['sortkey']
-							= isset($_REQUEST['sortkey']) ? $_REQUEST['sortkey'] : '';
+							= $_REQUEST['sortkey'] ?? '';
 
 						$params['navlinks']['report_link']['attr']['href']['urlvars']['sortdir']
-							= isset($_REQUEST['sortdir']) ? $_REQUEST['sortdir'] : '';
+							= $_REQUEST['sortdir'] ?? '';
 					}
 					else {
 						unset($params['navlinks']['report_link']);
@@ -274,21 +274,21 @@ class Report extends Plugin {
 			else {
 				/* ResultSet comes from a plugin:
 				 * show a edit report link. */
-				$params['navlinks']['report_link'] = array (
-					'attr'=> array (
-						'href' => array (
+				$params['navlinks']['report_link'] =  [
+					'attr'=>  [
+						'href' =>  [
 							'url' => 'plugin.php',
-							'urlvars' => array (
+							'urlvars' =>  [
 								'plugin' => $this->name,
 								'action' => 'edit',
 								'server' => $_REQUEST['server'],
 								'database' => $_REQUEST['database'],
 								'report_id' => $_REQUEST['report_id']
-							)
-						)
-					),
+							]
+						]
+					],
 					'content' => $this->lang['streditreport']
-				);
+				];
 
 				/* edit collapse link to add report related vars */
 				$params['navlinks']['collapse']['attr']['href']['urlvars']
@@ -322,7 +322,7 @@ class Report extends Plugin {
 	}
 
 	function get_subject_params() {
-		$vars = array();
+		$vars = [];
 		
 		if (! isset($_REQUEST['action']))
 			return $vars;
@@ -331,11 +331,11 @@ class Report extends Plugin {
 
 		switch ($action) {
 			case 'execute':
-				$vars = array(
+				$vars = [
 					'report_id' => $_REQUEST['report_id'],
 					'report' => $_REQUEST['report'],
 					'action' => 'properties' /*defaults to properties*/
-				);
+				];
 				if (isset($_REQUEST['back']))
 					$vars['action'] = $_REQUEST['back'];
 			break;
@@ -464,47 +464,47 @@ class Report extends Plugin {
 			echo "<tr><th class=\"data left\">{$lang['strcomment']}</th>\n";
 			echo "<td class=\"data1\">", $misc->printVal($report->fields['descr']), "</td></tr>\n";
 			echo "<tr><th class=\"data left\">{$lang['strpaginate']}</th>\n";
-			echo "<td class=\"data1\">", $misc->printVal($report->fields['paginate'], 'yesno', array('align' => 'left')), "</td></tr>\n";
+			echo "<td class=\"data1\">", $misc->printVal($report->fields['paginate'], 'yesno', ['align' => 'left']), "</td></tr>\n";
 			echo "<tr><th class=\"data left\">{$lang['strsql']}</th>\n";
 			echo "<td class=\"data1\">", $misc->printVal($report->fields['report_sql']), "</td></tr>\n";
 			echo "</table>\n";
 		}
 		else echo "<p>{$lang['strinvalidparam']}</p>\n";
 
-		$urlvars = array (
+		$urlvars =  [
 			'plugin' => $this->name,
 			'server' => $_REQUEST['server']
-		);
+		];
 		if (isset($_REQUEST['schema'])) $urlvars['schema'] = $_REQUEST['schema'];
 		if (isset($_REQUEST['schema'])) $urlvars['database'] = $_REQUEST['schema'];
 		
-		$navlinks = array (
-			'showall' => array (
-				'attr'=> array (
-					'href' => array (
+		$navlinks =  [
+			'showall' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'plugin.php',
-						'urlvars' => array_merge($urlvars, array('action' => 'default_action'))
-					)
-				),
+						'urlvars' => array_merge($urlvars, ['action' => 'default_action'])
+					]
+				],
 				'content' => $this->lang['strshowallreports']
-			),
-			'edit' => array (
-				'attr'=> array (
-					'href' => array (
+			],
+			'edit' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'plugin.php',
-						'urlvars' => array_merge($urlvars, array(
+						'urlvars' => array_merge($urlvars, [
 							'action' => 'edit',
-							'report_id' => $report->fields['report_id'])
+							'report_id' => $report->fields['report_id']]
 						)
-					)
-				),
+					]
+				],
 				'content' => $lang['stredit']
-			),
-			'execute' => array (
-				'attr'=> array (
-					'href' => array (
+			],
+			'execute' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'plugin.php',
-						'urlvars' => array_merge($urlvars, array(
+						'urlvars' => array_merge($urlvars, [
 							'action' => 'execute',
 							'report' => $report->fields['report_name'],
 							'database' => $report->fields['db_name'],
@@ -513,12 +513,12 @@ class Report extends Plugin {
 							'nohistory' => 't',
 							'return' => 'plugin',
 							'back' => 'properties'
-						))
-					)
-				),
+						])
+					]
+				],
 				'content' => $lang['strexecute']
-			)
-		);
+			]
+		];
 		$misc->printNavLinks($navlinks, 'reports-properties');
 	}
 
@@ -544,15 +544,15 @@ class Report extends Plugin {
 				$_REQUEST['report_sql'] = $_SESSION['sqlquery'];
 			}
 			else {
-				$_REQUEST['sortkey'] = isset($_REQUEST['sortkey']) ? $_REQUEST['sortkey'] : '';
-				if (preg_match('/^[0-9]+$/', $_REQUEST['sortkey']) && $_REQUEST['sortkey'] > 0) $orderby = array($_REQUEST['sortkey'] => $_REQUEST['sortdir']);
-					else $orderby = array();
+				$_REQUEST['sortkey'] = $_REQUEST['sortkey'] ?? '';
+				if (preg_match('/^[0-9]+$/', $_REQUEST['sortkey']) && $_REQUEST['sortkey'] > 0) $orderby = [$_REQUEST['sortkey'] => $_REQUEST['sortdir']];
+					else $orderby = [];
 
 				$subject = isset($_REQUEST['subject']) && isset($_REQUEST[$_REQUEST['subject']])
 					? $_REQUEST[$_REQUEST['subject']]
 					: '';
 
-				$_REQUEST['report_sql'] = $data->getSelectSQL($subject, array(), array(), array(), $orderby);
+				$_REQUEST['report_sql'] = $data->getSelectSQL($subject, [], [], [], $orderby);
 			}
 		}
 
@@ -700,48 +700,48 @@ class Report extends Plugin {
 		
 		$reports = $reportsdb->getReports();
 
-		$columns = array(
-			'report' => array(
+		$columns = [
+			'report' => [
 				'title' => $this->lang['strreport'],
 				'field' => field('report_name'),
 				'url'   => "plugin.php?plugin={$this->name}&amp;action=properties&amp;{$misc->href}&amp;",
-				'vars'  => array(
+				'vars'  => [
 					'report_id' => 'report_id',
 					'report' => 'report_name'
-				),
-			),
-			'database' => array(
+				],
+			],
+			'database' => [
 				'title' => $lang['strdatabase'],
 				'field' => field('db_name'),
-			),
-			'created' => array(
+			],
+			'created' => [
 				'title' => $lang['strcreated'],
 				'field' => field('date_created'),
-			),
-			'paginate' => array(
+			],
+			'paginate' => [
 				'title' => $lang['strpaginate'],
 				'field' => field('paginate'),
 				'type' => 'yesno',
-			),
-			'actions' => array(
+			],
+			'actions' => [
 				'title' => $lang['stractions'],
-			),
-			'comment' => array(
+			],
+			'comment' => [
 				'title' => $lang['strcomment'],
 				'field' => field('descr'),
-			),
-		);
+			],
+		];
 		
 		//$return_url = urlencode("plugin.php?plugin={$this->name}&amp;{$misc->href}");
 		$urlvars = $misc->getRequestVars();
 		
-		$actions = array(
-			'run' => array (
+		$actions = [
+			'run' =>  [
 				'content' => $lang['strexecute'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'plugin.php',
-						'urlvars' => array_merge($urlvars, array (
+						'urlvars' => array_merge($urlvars,  [
 							'plugin' => $this->name,
 							'action' => 'execute',
 							'report' => field('report_name'),
@@ -751,55 +751,55 @@ class Report extends Plugin {
 							'nohistory' => 't',
 							'return' => 'plugin',
 							'back' => 'default_action'
-						))
-					)
-				)
-			),
-			'edit' => array (
+						])
+					]
+				]
+			],
+			'edit' =>  [
 				'content' => $lang['stredit'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'plugin.php',
-						'urlvars' => array_merge($urlvars, array (
+						'urlvars' => array_merge($urlvars,  [
 							'plugin' => $this->name,
 							'action' => 'edit',
 							'report_id' => field('report_id'),
-						))
-					)
-				)
-			),
-			'drop' => array(
+						])
+					]
+				]
+			],
+			'drop' => [
 				'content' => $lang['strdrop'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'plugin.php',
-						'urlvars' => array_merge($urlvars, array (
+						'urlvars' => array_merge($urlvars,  [
 							'plugin' => $this->name,
 							'action' => 'drop',
 							'confirm' => 'true',
 							'report_id' => field('report_id'),
-						))
-					)
-				)
-			),
-		);
+						])
+					]
+				]
+			],
+		];
 		
 		$misc->printTable($reports, $columns, $actions, 'reports-reports', $this->lang['strnoreports']);
 
-		$navlinks = array (
-			array (
-				'attr'=> array (
-					'href' => array (
+		$navlinks =  [
+			 [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'plugin.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'plugin' => $this->name, 
 							'server' => field('server'),
-							'action' => 'create')
-					)
-				),
+							'action' => 'create']
+					]
+				],
 				'content' => $this->lang['strcreatereport']
-			)
-		);
+			]
+		];
 		$misc->printNavLinks($navlinks, 'reports-reports');
 		$misc->printFooter();
 	}

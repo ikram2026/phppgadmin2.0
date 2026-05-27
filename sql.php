@@ -32,10 +32,10 @@
 			switch (pg_result_status($rs)) {
 				case PGSQL_TUPLES_OK:
 					// If rows returned, then display the results
-					$num_fields = pg_numfields($rs);
+					$num_fields = pg_num_fields($rs);
 					echo "<p><table>\n<tr>";
 					for ($k = 0; $k < $num_fields; $k++) {
-						echo "<th class=\"data\">", $misc->printVal(pg_fieldname($rs, $k)), "</th>";
+						echo "<th class=\"data\">", $misc->printVal(pg_field_name($rs, $k)), "</th>";
 					}
 		
 					$i = 0;
@@ -44,7 +44,7 @@
 						$id = (($i % 2) == 0 ? '1' : '2');
 						echo "<tr class=\"data{$id}\">\n";
 						foreach ($row as $k => $v) {
-							echo "<td style=\"white-space:nowrap;\">", $misc->printVal($v, pg_fieldtype($rs, $k), array('null' => true)), "</td>";
+							echo "<td style=\"white-space:nowrap;\">", $misc->printVal($v, pg_field_type($rs, $k), ['null' => true]), "</td>";
 						}							
 						echo "</tr>\n";
 						$row = pg_fetch_row($rs);
@@ -103,7 +103,7 @@
 		exit;
 	}
 	
-	$subject = isset($_REQUEST['subject'])? $_REQUEST['subject'] : '';
+	$subject = $_REQUEST['subject'] ?? '';
 	$misc->printHeader($lang['strqueryresults']);
 	$misc->printBody();
 	$misc->printTrail('database');
@@ -119,7 +119,7 @@
 
 	// May as well try to time the query
 	if (function_exists('microtime')) {
-		list($usec, $sec) = explode(' ', microtime());
+		[$usec, $sec] = explode(' ', microtime());
 		$start_time = ((float)$usec + (float)$sec);
 	}
 	else $start_time = null;
@@ -153,7 +153,7 @@
 					echo "<tr class=\"data{$id}\">\n";
 					foreach ($rs->fields as $k => $v) {
 						$finfo = $rs->fetchField($k);
-						echo "<td style=\"white-space:nowrap;\">", $misc->printVal($v, $finfo->type, array('null' => true)), "</td>";
+						echo "<td style=\"white-space:nowrap;\">", $misc->printVal($v, $finfo->type, ['null' => true]), "</td>";
 					}							
 					echo "</tr>\n";
 					$rs->moveNext();
@@ -173,7 +173,7 @@
 
 	// May as well try to time the query
 	if ($start_time !== null) {
-		list($usec, $sec) = explode(' ', microtime());
+		[$usec, $sec] = explode(' ', microtime());
 		$end_time = ((float)$usec + (float)$sec);	
 		// Get duration in milliseconds, round to 3dp's	
 		$duration = number_format(($end_time - $start_time) * 1000, 3);
@@ -190,11 +190,11 @@
 	
 	echo "<p>{$lang['strsqlexecuted']}</p>\n";
 			
-	$navlinks = array();
-	$fields = array(
+	$navlinks = [];
+	$fields = [
 		'server' => $_REQUEST['server'],
 		'database' => $_REQUEST['database'],
-	);
+	];
 
 	if(isset($_REQUEST['schema']))
 		$fields['schema'] = $_REQUEST['schema'];
@@ -202,59 +202,59 @@
 	// Return
 	if (isset($_REQUEST['return'])) {
 		$urlvars = $misc->getSubjectParams($_REQUEST['return']);
-		$navlinks['back'] = array (
-			'attr'=> array (
-				'href' => array (
+		$navlinks['back'] =  [
+			'attr'=>  [
+				'href' =>  [
 					'url' => $urlvars['url'],
 					'urlvars' => $urlvars['params']
-				)
-			),
+				]
+			],
 			'content' => $lang['strback']
-		);
+		];
 	}
 
 	// Edit		
-	$navlinks['alter'] = array (
-		'attr'=> array (
-			'href' => array (
+	$navlinks['alter'] =  [
+		'attr'=>  [
+			'href' =>  [
 				'url' => 'database.php',
-				'urlvars' => array_merge($fields, array (
+				'urlvars' => array_merge($fields,  [
 					'action' => 'sql',
-				))
-			)
-		),
+				])
+			]
+		],
 		'content' => $lang['streditsql']
-	);
+	];
 
 	// Create view and download
 	if (isset($_SESSION['sqlquery']) && isset($rs) && is_object($rs) && $rs->recordCount() > 0) {
 		// Report views don't set a schema, so we need to disable create view in that case
 		if (isset($_REQUEST['schema'])) {
-			$navlinks['createview'] = array (
-				'attr'=> array (
-					'href' => array (
+			$navlinks['createview'] =  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'views.php',
-						'urlvars' => array_merge($fields, array (
+						'urlvars' => array_merge($fields,  [
 							'action' => 'create'
-						))
-					)
-				),
+						])
+					]
+				],
 				'content' => $lang['strcreateview']
-			);
+			];
 		}
 
 		if (isset($_REQUEST['search_path']))
 			$fields['search_path'] = $_REQUEST['search_path'];
 
-		$navlinks['download'] = array (
-			'attr'=> array (
-				'href' => array (
+		$navlinks['download'] =  [
+			'attr'=>  [
+				'href' =>  [
 					'url' => 'dataexport.php',
 					'urlvars' => $fields
-				)
-			),
+				]
+			],
 			'content' => $lang['strdownload']
-		);
+		];
 	}
 
 	$misc->printNavLinks($navlinks, 'sql-form', get_defined_vars());

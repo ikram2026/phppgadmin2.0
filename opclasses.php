@@ -9,7 +9,7 @@
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
 	
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 	if (!isset($msg)) $msg = '';
 
 	/**
@@ -25,31 +25,31 @@
 		
 		$opclasses = $data->getOpClasses();
 		
-		$columns = array(
-			'accessmethod' => array(
+		$columns = [
+			'accessmethod' => [
 				'title' => $lang['straccessmethod'],
 				'field' => field('amname'),
-			),
-			'opclass' => array(
+			],
+			'opclass' => [
 				'title' => $lang['strname'],
 				'field' => field('opcname'),
-			),
-			'type' => array(
+			],
+			'type' => [
 				'title' => $lang['strtype'],
 				'field' => field('opcintype'),
-			),
-			'default' => array(
+			],
+			'default' => [
 				'title' => $lang['strdefault'],
 				'field' => field('opcdefault'),
 				'type'  => 'yesno',
-			),
-			'comment' => array(
+			],
+			'comment' => [
 				'title' => $lang['strcomment'],
 				'field' => field('opccomment'),
-			),
-		);
+			],
+		];
 		
-		$actions = array();
+		$actions = [];
 		
 		$misc->printTable($opclasses, $columns, $actions, 'opclasses-opclasses', $lang['strnoopclasses']);
 	}
@@ -65,11 +65,11 @@
 		// OpClass prototype: "op_class/access_method"
 		$proto = concat(field('opcname'),'/',field('amname'));
 		
-		$attrs = array(
+		$attrs = [
 			'text'   => $proto,
 			'icon'   => 'OperatorClass',
 			'toolTip'=> field('opccomment'),
-		);
+		];
 		
 		$misc->printTree($opclasses, $attrs, 'opclasses');
 		exit;

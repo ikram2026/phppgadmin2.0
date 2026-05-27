@@ -2,7 +2,7 @@
 
 // Contributed by Grzegorz Pacan <gp#dione.cc>
 
-$ADODB_LANG_ARRAY = array (
+$ADODB_LANG_ARRAY =  [
 			'LANG'                      => 'pl',
             DB_ERROR                    => 'niezidentyfikowany b³±d',
             DB_ERROR_ALREADY_EXISTS     => 'ju¿ istniej±',
@@ -31,5 +31,5 @@ $ADODB_LANG_ARRAY = array (
             DB_ERROR_EXTENSION_NOT_FOUND=> 'nie znaleziono rozszerzenia',
             DB_ERROR_NOSUCHDB           => 'nie znaleziono bazy',
             DB_ERROR_ACCESS_VIOLATION   => 'niedostateczne uprawnienia'
-);
+];
 ?>

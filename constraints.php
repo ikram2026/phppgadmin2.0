@@ -10,7 +10,7 @@
 	include_once('./libraries/lib.inc.php');
 	include_once('./classes/class.select.php');
 
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 
 	/**
 	 * Confirm and then actually add a FOREIGN KEY constraint
@@ -25,7 +25,7 @@
 		switch ($stage) {
 			case 2:
 				// Check that they've given at least one source column
-				if (!isset($_REQUEST['SourceColumnList']) && (!isset($_POST['IndexColumnList']) || !is_array($_POST['IndexColumnList']) || sizeof($_POST['IndexColumnList']) == 0))
+				if (!isset($_REQUEST['SourceColumnList']) && (!isset($_POST['IndexColumnList']) || !is_array($_POST['IndexColumnList']) || count($_POST['IndexColumnList']) == 0))
 					addForeignKey(1, $lang['strfkneedscols']);
 				else {
  					// Copy the IndexColumnList variable from stage 1
@@ -134,8 +134,8 @@
 				// Check that they've given at least one column
 				if (isset($_POST['SourceColumnList'])) $temp = unserialize($_POST['SourceColumnList']);
 				if (!isset($_POST['IndexColumnList']) || !is_array($_POST['IndexColumnList'])
-						|| sizeof($_POST['IndexColumnList']) == 0 || !isset($temp)
-						|| !is_array($temp) || sizeof($temp) == 0) addForeignKey(2, $lang['strfkneedscols']);
+						|| count($_POST['IndexColumnList']) == 0 || !isset($temp)
+						|| !is_array($temp) || count($temp) == 0) addForeignKey(2, $lang['strfkneedscols']);
 				else {
 					$status = $data->addForeignKey($_POST['table'], $_POST['target']['schemaname'], $_POST['target']['tablename'],
 						unserialize($_POST['SourceColumnList']), $_POST['IndexColumnList'], $_POST['upd_action'], $_POST['del_action'],
@@ -189,7 +189,7 @@
 				echo "<tr>";
 				echo "<td class=\"data1\" colspan=\"3\"><select name=\"target\">";
 				while (!$tables->EOF) {
-					$key = array('schemaname' => $tables->fields['nspname'], 'tablename' => $tables->fields['relname']);
+					$key = ['schemaname' => $tables->fields['nspname'], 'tablename' => $tables->fields['relname']];
 					$key = serialize($key);
 					echo "<option value=\"", htmlspecialchars($key), "\">";
 					if ($tables->fields['nspname'] != $_REQUEST['schema']) {
@@ -316,7 +316,7 @@
 			if ($_POST['type'] == 'primary') {
 				// Check that they've given at least one column
 				if (!isset($_POST['IndexColumnList']) || !is_array($_POST['IndexColumnList'])
-						|| sizeof($_POST['IndexColumnList']) == 0) addPrimaryOrUniqueKey($_POST['type'], true, $lang['strpkneedscols']);
+						|| count($_POST['IndexColumnList']) == 0) addPrimaryOrUniqueKey($_POST['type'], true, $lang['strpkneedscols']);
 				else {
 					$status = $data->addPrimaryKey($_POST['table'], $_POST['IndexColumnList'], $_POST['name'], $_POST['tablespace']);
 					if ($status == 0)
@@ -328,7 +328,7 @@
 			elseif ($_POST['type'] == 'unique') {
 				// Check that they've given at least one column
 				if (!isset($_POST['IndexColumnList']) || !is_array($_POST['IndexColumnList'])
-						|| sizeof($_POST['IndexColumnList']) == 0) addPrimaryOrUniqueKey($_POST['type'], true, $lang['struniqneedscols']);
+						|| count($_POST['IndexColumnList']) == 0) addPrimaryOrUniqueKey($_POST['type'], true, $lang['struniqneedscols']);
 				else {
 					$status = $data->addUniqueKey($_POST['table'], $_POST['IndexColumnList'], $_POST['name'], $_POST['tablespace']);
 					if ($status == 0)
@@ -434,7 +434,7 @@
 			global $data;
 			if (is_null($rowdata->fields['consrc'])) {
 				$atts = $data->getAttributeNames($_REQUEST['table'], explode(' ', $rowdata->fields['indkey']));
-				$rowdata->fields['+definition'] = ($rowdata->fields['contype'] == 'u' ? "UNIQUE (" : "PRIMARY KEY (") . join(',', $atts) . ')';
+				$rowdata->fields['+definition'] = ($rowdata->fields['contype'] == 'u' ? "UNIQUE (" : "PRIMARY KEY (") . implode(',', $atts) . ')';
 			} else {
 				$rowdata->fields['+definition'] = $rowdata->fields['consrc'];
 			}
@@ -446,106 +446,106 @@
 
 		$constraints = $data->getConstraints($_REQUEST['table']);
 
-		$columns = array(
-			'constraint' => array(
+		$columns = [
+			'constraint' => [
 				'title' => $lang['strname'],
 				'field' => field('conname'),
-			),
-			'definition' => array(
+			],
+			'definition' => [
 				'title' => $lang['strdefinition'],
 				'field' => field('+definition'),
 				'type'  => 'pre',
-			),
-			'actions' => array(
+			],
+			'actions' => [
 				'title' => $lang['stractions'],
-			),
-			'comment' => array(
+			],
+			'comment' => [
 				'title' => $lang['strcomment'],
 				'field' => field('constcomment'),
-			),
-		);
+			],
+		];
 
-		$actions = array(
-			'drop' => array(
+		$actions = [
+			'drop' => [
 				'content' => $lang['strdrop'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'constraints.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_drop',
 							'table' => $_REQUEST['table'],
 							'constraint' => field('conname'),
 							'type' => field('contype')
-						)
-					)
-				)
-			)
-		);
+						]
+					]
+				]
+			]
+		];
 
 		$misc->printTable($constraints, $columns, $actions, 'constraints-constraints', $lang['strnoconstraints'], 'cnPre');
 
-		$navlinks = array (
-			'addcheck' => array (
-				'attr'=> array (
-					'href' => array (
+		$navlinks =  [
+			'addcheck' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'constraints.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'add_check',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema'],
 							'table' => $_REQUEST['table']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['straddcheck'],
-			),
-			'adduniq' => array (
-				'attr'=> array (
-					'href' => array (
+			],
+			'adduniq' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'constraints.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'add_unique_key',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema'],
 							'table' => $_REQUEST['table']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['stradduniq'],
-			),
-			'addpk' => array (
-				'attr'=> array (
-					'href' => array (
+			],
+			'addpk' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'constraints.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'add_primary_key',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema'],
 							'table' => $_REQUEST['table']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['straddpk'],
-			),
-			'addfk' => array (
-				'attr'=> array (
-					'href' => array (
+			],
+			'addfk' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'constraints.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'add_foreign_key',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema'],
 							'table' => $_REQUEST['table']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['straddfk']
-			)
-		);
+			]
+		];
 		$misc->printNavLinks($navlinks, 'constraints-constraints', get_defined_vars());
 	}
 
@@ -570,10 +570,10 @@
 			}
 		}
 
-		$attrs = array(
+		$attrs = [
 			'text'   => field('conname'),
 			'icon'   => callback('getIcon'),
-		);
+		];
 
 		$misc->printTree($constraints, $attrs, 'constraints');
 		exit;

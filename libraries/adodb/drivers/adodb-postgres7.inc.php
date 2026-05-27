@@ -17,14 +17,14 @@ if (!defined('ADODB_DIR')) die();
 include_once(ADODB_DIR."/drivers/adodb-postgres64.inc.php");
 
 class ADODB_postgres7 extends ADODB_postgres64 {
-	var $databaseType = 'postgres7';	
-	var $hasLimit = true;	// set to true for pgsql 6.5+ only. support pgsql/mysql SELECT * FROM TABLE LIMIT 10
-	var $ansiOuter = true;
-	var $charSet = true; //set to true for Postgres 7 and above - PG client supports encodings
+	public $databaseType = 'postgres7';	
+	public $hasLimit = true;	// set to true for pgsql 6.5+ only. support pgsql/mysql SELECT * FROM TABLE LIMIT 10
+	public $ansiOuter = true;
+	public $charSet = true; //set to true for Postgres 7 and above - PG client supports encodings
 	
-	function ADODB_postgres7() 
+	function __construct() 
 	{
-		$this->ADODB_postgres64();
+		\ADODB_postgres64::__construct();
 		if (ADODB_ASSOC_CASE !== 2) {
 			$this->rsPrefix .= 'assoc_';
 		}
@@ -92,7 +92,7 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 	
 	  if (!$rs || $rs->EOF) return false;
 	
-	  $a = array();
+	  $a = [];
 	  while (!$rs->EOF) {
 	    if ($upper) {
 	      $a[strtoupper($rs->Fields('lookup_table'))][] = strtoupper(str_replace('"','',$rs->Fields('dep_field').'='.$rs->Fields('lookup_field')));
@@ -126,7 +126,7 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 		if (!$rs || $rs->EOF) return false;
 		
 		$arr = $rs->GetArray();
-		$a = array();
+		$a = [];
 		foreach($arr as $v) {
 			$data = explode(chr(0), $v['args']);
 			$size = count($data)-1; //-1 because the last node is empty
@@ -152,7 +152,7 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 			$sqlarr = explode('?',trim($sql));
 			$sql = '';
 			$i = 1;
-			$last = sizeof($sqlarr)-1;
+			$last = count($sqlarr)-1;
 			foreach($sqlarr as $v) {
 				if ($last < $i) $sql .= $v;
 				else $sql .= $v.' $'.$i;
@@ -164,9 +164,9 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 			$rez = pg_query($this->_connectionID,$sql);
 		}
 		// check if no data returned, then no need to create real recordset
-		if ($rez && pg_numfields($rez) <= 0) {
+		if ($rez && pg_num_fields($rez) <= 0) {
 			if (is_resource($this->_resultid) && get_resource_type($this->_resultid) === 'pgsql result') {
-				pg_freeresult($this->_resultid);
+				pg_free_result($this->_resultid);
 			}
 			$this->_resultid = $rez;
 			return true;
@@ -212,7 +212,7 @@ class ADODB_postgres7 extends ADODB_postgres64 {
 
 class ADORecordSet_postgres7 extends ADORecordSet_postgres64{
 
-	var $databaseType = "postgres7";
+	public $databaseType = "postgres7";
 	
 	
 	function __construct($queryID,$mode=false) 
@@ -243,12 +243,12 @@ class ADORecordSet_postgres7 extends ADORecordSet_postgres64{
 
 class ADORecordSet_assoc_postgres7 extends ADORecordSet_postgres64{
 
-	var $databaseType = "postgres7";
+	public $databaseType = "postgres7";
 	
 	
-	function ADORecordSet_assoc_postgres7($queryID,$mode=false) 
+	function __construct($queryID,$mode=false) 
 	{
-		$this->ADORecordSet_postgres64($queryID,$mode);
+		\ADORecordSet_postgres64::__construct($queryID, $mode);
 	}
 	
 	function _fetch()
@@ -271,11 +271,11 @@ class ADORecordSet_assoc_postgres7 extends ADORecordSet_postgres64{
 	{
 		if (ADODB_ASSOC_CASE == 2) return; // native
 	
-		$arr = array();
+		$arr = [];
 		$lowercase = (ADODB_ASSOC_CASE == 0);
 		
 		foreach($this->fields as $k => $v) {
-			if (is_integer($k)) $arr[$k] = $v;
+			if (is_int($k)) $arr[$k] = $v;
 			else {
 				if ($lowercase)
 					$arr[strtolower($k)] = $v;

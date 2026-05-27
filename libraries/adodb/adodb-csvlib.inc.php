@@ -48,7 +48,7 @@ $ADODB_INCLUDED_CSV = 1;
 			$text = "====-1,0,$sql\n";
 			return $text;
 		}
-		$tt = ($rs->timeCreated) ? $rs->timeCreated : time();
+		$tt = $rs->timeCreated ?: time();
 		
 		## changed format from ====0 to ====1
 		$line = "====1,$tt,$sql\n";
@@ -56,7 +56,7 @@ $ADODB_INCLUDED_CSV = 1;
 		if ($rs->databaseType == 'array') {
 			$rows = $rs->_array;
 		} else {
-			$rows = array();
+			$rows = [];
 			while (!$rs->EOF) {	
 				$rows[] = $rs->fields;
 				$rs->MoveNext();
@@ -68,7 +68,7 @@ $ADODB_INCLUDED_CSV = 1;
 			$flds[] = $o;
 		}
 	
-		$savefetch = isset($rs->adodbFetchMode) ? $rs->adodbFetchMode : $rs->fetchMode;
+		$savefetch = $rs->adodbFetchMode ?? $rs->fetchMode;
 		$class = $rs->connection->arrayClass;
 		$rs2 = new $class();
 		$rs2->timeCreated = $rs->timeCreated; # memcache fix
@@ -101,7 +101,7 @@ $ADODB_INCLUDED_CSV = 1;
 			return $false;
 		}
 		@flock($fp, LOCK_SH);
-		$arr = array();
+		$arr = [];
 		$ttl = 0;
 		
 		if ($meta = fgetcsv($fp, 32000, ",")) {
@@ -118,7 +118,7 @@ $ADODB_INCLUDED_CSV = 1;
 			if (strncmp($meta[0], '====',4) === 0) {
 			
 				if ($meta[0] == "====-1") {
-					if (sizeof($meta) < 5) {
+					if (count($meta) < 5) {
 						$err = "Corrupt first line for format -1";
 						fclose($fp);
 						return $false;
@@ -131,7 +131,7 @@ $ADODB_INCLUDED_CSV = 1;
 					}
 					
 					$rs = new $rsclass($val=true);
-					$rs->fields = array();
+					$rs->fields = [];
 					$rs->timeCreated = $meta[1];
 					$rs->EOF = true;
 					$rs->_numOfFields = 0;
@@ -148,28 +148,28 @@ $ADODB_INCLUDED_CSV = 1;
 			# -2 sec before timeout, give processes 1/16 chance of timing out
 			# -1 sec after timeout give processes 1/4 chance of timing out
 			# +0 sec after timeout, give processes 100% chance of timing out
-				if (sizeof($meta) > 1) {
+				if (count($meta) > 1) {
 					if($timeout >0){ 
 						$tdiff = (integer)( $meta[1]+$timeout - time());
 						if ($tdiff <= 2) {
 							switch($tdiff) {
 							case 4:
 							case 3:
-								if ((rand() & 31) == 0) {
+								if ((random_int(0, mt_getrandmax()) & 31) == 0) {
 									fclose($fp);
 									$err = "Timeout 3";
 									return $false;
 								}
 								break;
 							case 2: 
-								if ((rand() & 15) == 0) {
+								if ((random_int(0, mt_getrandmax()) & 15) == 0) {
 									fclose($fp);
 									$err = "Timeout 2";
 									return $false;
 								}
 								break;
 							case 1:
-								if ((rand() & 3) == 0) {
+								if ((random_int(0, mt_getrandmax()) & 3) == 0) {
 									fclose($fp);
 									$err = "Timeout 1";
 									return $false;
@@ -217,10 +217,10 @@ $ADODB_INCLUDED_CSV = 1;
 			}
 
 			// Get Column definitions
-			$flds = array();
+			$flds = [];
 			foreach($meta as $o) {
 				$o2 = explode(':',$o);
-				if (sizeof($o2)!=3) {
+				if (count($o2)!=3) {
 					$arr[] = $meta;
 					$flds = false;
 					break;

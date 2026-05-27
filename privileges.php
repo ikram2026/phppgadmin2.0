@@ -9,7 +9,7 @@
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
 	
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 	if (!isset($msg)) $msg = '';
 
 	/**
@@ -22,9 +22,9 @@
 		global $data, $misc;
 		global $lang;
 
-		if (!isset($_REQUEST['username'])) $_REQUEST['username'] = array();
-		if (!isset($_REQUEST['groupname'])) $_REQUEST['groupname'] = array();
-		if (!isset($_REQUEST['privilege'])) $_REQUEST['privilege'] = array();
+		if (!isset($_REQUEST['username'])) $_REQUEST['username'] = [];
+		if (!isset($_REQUEST['groupname'])) $_REQUEST['groupname'] = [];
+		if (!isset($_REQUEST['privilege'])) $_REQUEST['privilege'] = [];
 	
 		if ($confirm) {
 			// Get users from the database
@@ -131,9 +131,9 @@
 			if ($status == 0)
 				doDefault($lang['strgranted']);
 			elseif ($status == -3 || $status == -4)
-				doAlter(true, $_REQUEST['mode'], $lang['strgrantbad']);
+				doAlter(true);
 			else
-				doAlter(true, $_REQUEST['mode'], $lang['strgrantfailed']);
+				doAlter(true);
 		}
 	}
 
@@ -175,7 +175,7 @@
 		else
 			$privileges = $data->getPrivileges($object, $_REQUEST['subject']);
 
-		if (sizeof($privileges) > 0) {
+		if (count($privileges) > 0) {
 			echo "<table>\n";
 			if ($data->hasRoles())
 				echo "<tr><th class=\"data\">{$lang['strrole']}</th>";
@@ -253,7 +253,7 @@
 		
 		if ($_REQUEST['subject'] == 'function') {
 			$objectoid = $_REQUEST[$_REQUEST['subject'].'_oid'];
-			$urlvars = array (
+			$urlvars =  [
 				'action' => 'alter',
 				'server' => $_REQUEST['server'],
 				'database' => $_REQUEST['database'],
@@ -261,17 +261,17 @@
 				$subject => $object,
 				"{$subject}_oid" => $objectoid,
 				'subject'=> $subject
-			);
+			];
 		}
 		else if ($_REQUEST['subject'] == 'column') {
-			$urlvars = array (
+			$urlvars =  [
 				'action' => 'alter',
 				'server' => $_REQUEST['server'],
 				'database' => $_REQUEST['database'],
 				'schema' => $_REQUEST['schema'],
 				$subject => $object,
 				'subject'=> $subject
-			);
+			];
 
 			if (isset($_REQUEST['table']))
 				$urlvars['table'] = $_REQUEST['table'];
@@ -279,52 +279,52 @@
 				$urlvars['view'] = $_REQUEST['view'];
 		}
 		else {
-			$urlvars = array (
+			$urlvars =  [
 				'action' => 'alter',
 				'server' => $_REQUEST['server'],
 				'database' => $_REQUEST['database'],
 				$subject => $object,
 				'subject'=> $subject
-			);
+			];
 			if (isset($_REQUEST['schema'])) {
 				$urlvars['schema'] = $_REQUEST['schema'];
 			}
 		}
 
-		$navlinks = array (
-			'grant' => array (
-				'attr'=> array (
-					'href' => array (
+		$navlinks =  [
+			'grant' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'privileges.php',
-						'urlvars' => array_merge($urlvars, array('mode' => 'grant'))
-					)
-				),
+						'urlvars' => array_merge($urlvars, ['mode' => 'grant'])
+					]
+				],
 				'content' => $lang['strgrant']
-			),
-			'revoke' => array (
-				'attr'=> array (
-					'href' => array (
+			],
+			'revoke' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'privileges.php',
-						'urlvars' => array_merge($urlvars, array('mode' => 'revoke'))
-					)
-				),
+						'urlvars' => array_merge($urlvars, ['mode' => 'revoke'])
+					]
+				],
 				'content' => $lang['strrevoke']
-			)
-		);
+			]
+		];
 
 		if (isset($allurl)) {
-			$navlinks[$alllabel] = array (
-				'attr'=> array (
-					'href' => array (
+			$navlinks[$alllabel] =  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => $allurl,
-						'urlvars' => array (
+						'urlvars' =>  [
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $alltxt
-			);
+			];
 			if (isset($_REQUEST['schema'])) {
 				$navlinks[$alllabel]['attr']['href']['urlvars']['schema'] = $_REQUEST['schema'];
 			}
@@ -339,10 +339,10 @@
 	switch ($action) {
 		case 'save':
 			if (isset($_REQUEST['cancel'])) doDefault();
-			else doAlter(false, $_REQUEST['mode']);
+			else doAlter(false);
 			break;
 		case 'alter':
-			doAlter(true, $_REQUEST['mode']);
+			doAlter(true);
 			break;
 		default:
 			doDefault();

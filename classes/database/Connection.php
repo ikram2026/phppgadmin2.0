@@ -10,10 +10,10 @@ include_once('./classes/database/ADODB_base.php');
 
 class Connection {
 
-	var $conn;
+	public $conn;
 	
 	// The backend platform. Set to UNKNOWN by default.
-	var $platform = 'UNKNOWN';
+	public $platform = 'UNKNOWN';
 	
 	/**
 	 * Creates a new connection. Will actually make a database connection.
@@ -77,7 +77,7 @@ class Connection {
 	
 			$params = explode(' ', $field);
 			// Match standard version formats like "PostgreSQL 18.4..."
-			$version = isset($params[1]) ? $params[1] : $field; 
+			$version = $params[1] ?? $field; 
 
 		}
 		
@@ -88,17 +88,34 @@ class Connection {
 		$majorVersion = (int)$versionParts[0];
 
 		// phpPgAdmin 2.0: Route all double-digit modern PostgreSQL platforms cleanly
-		if ($majorVersion >= 14) {
-			return 'Postgres';
-		}
+		//if ($majorVersion >= 14) {
+		//	return 'Postgres';
+		//}
+		// phpPgAdmin 2.0: Route all double-digit modern PostgreSQL platforms cleanly
+          //if ($majorVersion >= 14) {
+          //    return 'Postgres13';
+          // }
+
 
 		// Fallback handlers for legacy structural versions
-		switch ($majorVersion) {
+		/*switch ($majorVersion) {
 			case 13: return 'Postgres13';
 			case 12: return 'Postgres12';
 			case 11: return 'Postgres11';
 			case 10: return 'Postgres10';
-		}    
+		} */
+	        // Fallback handlers for legacy structural versions
+        switch ($majorVersion) {
+            case 18: return 'Postgres18';
+            case 17: return 'Postgres17';
+            case 16: return 'Postgres16';
+            case 15: return 'Postgres15';
+            case 14: return 'Postgres14';
+            case 13: return 'Postgres13';
+            case 12: return 'Postgres12';
+            case 11: return 'Postgres11';
+            case 10: return 'Postgres10';
+        }   
 
 		switch (substr($version, 0, 3)) {
 			case '9.6': return 'Postgres96'; break;
@@ -133,3 +150,4 @@ class Connection {
 		return pg_last_error($this->conn->_connectionID);
 	}
 }
+?>

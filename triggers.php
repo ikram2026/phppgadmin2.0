@@ -10,7 +10,7 @@
 	include_once('./libraries/lib.inc.php');
 	include_once('./classes/class.select.php');
 	
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 
 	/** 
 	 * Function to save after altering a trigger
@@ -280,104 +280,104 @@
 
 		$triggers = $data->getTriggers($_REQUEST['table']);
 
-		$columns = array(
-			'trigger' => array(
+		$columns = [
+			'trigger' => [
 				'title' => $lang['strname'],
 				'field' => field('tgname'),
-			),
-			'definition' => array(
+			],
+			'definition' => [
 				'title' => $lang['strdefinition'],
 				'field' => field('tgdef'),
-			),
-			'function' => array(
+			],
+			'function' => [
 				'title' => $lang['strfunction'],
 				'field' => field('proproto'),
 				'url' => "functions.php?action=properties&amp;server={$_REQUEST['server']}&amp;database={$_REQUEST['database']}&amp;",
-				'vars' => array(
+				'vars' => [
 					'schema' => 'pronamespace',
 					'function' => 'proproto',
 					'function_oid' => 'prooid',
-				),
-			),
-			'actions' => array(
+				],
+			],
+			'actions' => [
 				'title' => $lang['stractions'],
-			),
-		);
+			],
+		];
 
-		$actions = array(
-			'alter' => array(
+		$actions = [
+			'alter' => [
 				'content' => $lang['stralter'],
-					'attr'=> array (
-						'href' => array (
+					'attr'=>  [
+						'href' =>  [
 							'url' => 'triggers.php',
-							'urlvars' => array (
+							'urlvars' =>  [
 								'action' => 'confirm_alter',
 								'table' => $_REQUEST['table'],
 								'trigger' => field('tgname')
-							)
-						)
-					)
-			),
-			'drop' => array(
+							]
+						]
+					]
+			],
+			'drop' => [
 				'content' => $lang['strdrop'],
-					'attr'=> array (
-						'href' => array (
+					'attr'=>  [
+						'href' =>  [
 							'url' => 'triggers.php',
-							'urlvars' => array (
+							'urlvars' =>  [
 								'action' => 'confirm_drop',
 								'table' => $_REQUEST['table'],
 								'trigger' => field('tgname')
-							)
-						)
-					)
-			),
-		);
+							]
+						]
+					]
+			],
+		];
 		if($data->hasDisableTriggers()) {
-			$actions['enable'] = array(
+			$actions['enable'] = [
 				'content' => $lang['strenable'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'triggers.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_enable',
 							'table' => $_REQUEST['table'],
 							'trigger' => field('tgname')
-						)
-					)
-				)
-			);
-			$actions['disable'] = array(
+						]
+					]
+				]
+			];
+			$actions['disable'] = [
 				'content' => $lang['strdisable'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'triggers.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_disable',
 							'table' => $_REQUEST['table'],
 							'trigger' => field('tgname')
-						)
-					)
-				)
-			);
+						]
+					]
+				]
+			];
 		}
 
 		$misc->printTable($triggers, $columns, $actions, 'triggers-triggers', $lang['strnotriggers'], 'tgPre');
 		
-		$misc->printNavLinks(array ('create' => array (
-				'attr'=> array (
-					'href' => array (
+		$misc->printNavLinks( ['create' =>  [
+				'attr'=>  [
+					'href' =>  [
 					'url' => 'triggers.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'create',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema'],
 							'table' => $_REQUEST['table']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['strcreatetrigger']
-			)), 'triggers-triggers', get_defined_vars());
+			]], 'triggers-triggers', get_defined_vars());
 	}
 
 	function doTree() {
@@ -388,10 +388,10 @@
 
 		$reqvars = $misc->getRequestVars('table');
 		
-		$attrs = array(
+		$attrs = [
 			'text'   => field('tgname'),
 			'icon'   => 'Trigger',
-		);
+		];
 
 		$misc->printTree($triggers, $attrs, 'triggers');
 		exit;

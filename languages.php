@@ -9,7 +9,7 @@
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
 	
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 	if (!isset($msg)) $msg = '';
 
 	/**
@@ -25,23 +25,23 @@
 		
 		$languages = $data->getLanguages();
 
-		$columns = array(
-			'language' => array(
+		$columns = [
+			'language' => [
 				'title' => $lang['strname'],
 				'field' => field('lanname'),
-			),
-			'trusted' => array(
+			],
+			'trusted' => [
 				'title' => $lang['strtrusted'],
 				'field' => field('lanpltrusted'),
 				'type'  => 'yesno',
-			),
-			'function' => array(
+			],
+			'function' => [
 				'title' => $lang['strfunction'],
 				'field' => field('lanplcallf'),
-			),
-		);
+			],
+		];
 
-		$actions = array();
+		$actions = [];
 
 		$misc->printTable($languages, $columns, $actions, 'languages-languages', $lang['strnolanguages']);
 	}
@@ -54,10 +54,10 @@
 		
 		$languages = $data->getLanguages();
 		
-		$attrs = array(
+		$attrs = [
 			'text'   => field('lanname'),
 			'icon'   => 'Language'
-		);
+		];
 		
 		$misc->printTree($languages, $attrs, 'languages');
 		exit;

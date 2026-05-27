@@ -52,8 +52,8 @@ if (false) {
 function adodb_probetypes(&$array,&$types,$probe=8)
 {
 // probe and guess the type
-	$types = array();
-	if ($probe > sizeof($array)) $max = sizeof($array);
+	$types = [];
+	if ($probe > count($array)) $max = count($array);
 	else $max = $probe;
 	
 	
@@ -94,12 +94,12 @@ function adodb_probetypes(&$array,&$types,$probe=8)
 
 function  adodb_transpose(&$arr, &$newarr, &$hdr, &$fobjs)
 {
-	$oldX = sizeof(reset($arr));
-	$oldY = sizeof($arr);	
+	$oldX = count(reset($arr));
+	$oldY = count($arr);	
 	
 	if ($hdr) {
 		$startx = 1;
-		$hdr = array('Fields');
+		$hdr = ['Fields'];
 		for ($y = 0; $y < $oldY; $y++) {
 			$hdr[] = $arr[$y][0];
 		}
@@ -109,9 +109,9 @@ function  adodb_transpose(&$arr, &$newarr, &$hdr, &$fobjs)
 	for ($x = $startx; $x < $oldX; $x++) {
 		if ($fobjs) {
 			$o = $fobjs[$x];
-			$newarr[] = array($o->name);
+			$newarr[] = [$o->name];
 		} else
-			$newarr[] = array();
+			$newarr[] = [];
 			
 		for ($y = 0; $y < $oldY; $y++) {
 			$newarr[$x-$startx][] = $arr[$y][$x];
@@ -124,7 +124,7 @@ function  adodb_transpose(&$arr, &$newarr, &$hdr, &$fobjs)
 function _array_change_key_case($an_array)
 {
 	if (is_array($an_array)) {
-		$new_array = array();
+		$new_array = [];
 		foreach($an_array as $key=>$value)
 			$new_array[strtoupper($key)] = $value;
 
@@ -141,7 +141,7 @@ function _adodb_replace(&$zthis, $table, $fieldArray, $keyCol, $autoQuote, $has_
 		$uSet = '';
 		
 		if (!is_array($keyCol)) {
-			$keyCol = array($keyCol);
+			$keyCol = [$keyCol];
 		}
 		foreach($fieldArray as $k => $v) {
 			if ($v === null) {
@@ -230,7 +230,7 @@ function _adodb_getmenu(&$zthis, $name,$defstr='',$blank1stItem=true,$multiple=f
 	if ($blank1stItem) 
 		if (is_string($blank1stItem))  {
 			$barr = explode(':',$blank1stItem);
-			if (sizeof($barr) == 1) $barr[] = '';
+			if (count($barr) == 1) $barr[] = '';
 			$s .= "\n<option value=\"".$barr[0]."\">".$barr[1]."</option>";
 		} else $s .= "\n<option></option>";
 
@@ -316,7 +316,7 @@ function _adodb_getmenu_gp(&$zthis, $name,$defstr='',$blank1stItem=true,$multipl
 	if ($blank1stItem) 
 		if (is_string($blank1stItem))  {
 			$barr = explode(':',$blank1stItem);
-			if (sizeof($barr) == 1) $barr[] = '';
+			if (count($barr) == 1) $barr[] = '';
 			$s .= "\n<option value=\"".$barr[0]."\">".$barr[1]."</option>";
 		} else $s .= "\n<option></option>";
 
@@ -326,7 +326,7 @@ function _adodb_getmenu_gp(&$zthis, $name,$defstr='',$blank1stItem=true,$multipl
 	$value = '';
     $optgroup = null;
     $firstgroup = true;
-    $fieldsize = sizeof($zthis->fields);
+    $fieldsize = count($zthis->fields);
 	while(!$zthis->EOF) {
 		$zval = rtrim(reset($zthis->fields));
 
@@ -720,7 +720,7 @@ function _adodb_getupdatesql(&$zthis,&$rs, $arrFields,$forceUpdate=false,$magicq
 				else if (preg_match('/\s(FOR UPDATE.*)/is', $whereClause[1], $discard));
 				else preg_match('/\s.*(\) WHERE .*)/is', $whereClause[1], $discard); # see http://sourceforge.net/tracker/index.php?func=detail&aid=1379638&group_id=42718&atid=433976
 			} else
-				$whereClause = array(false,false);
+				$whereClause = [false,false];
 				
 			if ($discard)
 				$whereClause[1] = substr($whereClause[1], 0, strlen($whereClause[1]) - strlen($discard[1]));
@@ -790,7 +790,7 @@ static $cacheCols;
 			$cacheCols = $columns;
 		}
 	} else if (is_subclass_of($rs, 'adorecordset')) {
-		if (isset($rs->insertSig) && is_integer($cacheRS) && $cacheRS == $rs->insertSig) {
+		if (isset($rs->insertSig) && is_int($cacheRS) && $cacheRS == $rs->insertSig) {
 			$columns = $cacheCols;
 		} else {
 			for ($i=0, $max=$rs->FieldCount(); $i < $max; $i++) 
@@ -1017,7 +1017,7 @@ function _adodb_column_sql(&$zthis, $action, $type, $fname, $fnameq, $arrFields,
 		    break;
 
 		default:
-			$val = str_replace(array("'"," ","("),"",$arrFields[$fname]); // basic sql injection defence
+			$val = str_replace(["'"," ","("],"",$arrFields[$fname]); // basic sql injection defence
 			if (empty($val)) $val = '0';
 			break;
 	}
@@ -1114,14 +1114,14 @@ function _adodb_backtrace($printOrArr=true,$levels=9999,$skippy=0,$ishtml=null)
 	else $traceArr = debug_backtrace();
 	array_shift($traceArr);
 	array_shift($traceArr);
-	$tabs = sizeof($traceArr)-2;
+	$tabs = count($traceArr)-2;
 	
 	foreach ($traceArr as $arr) {
 		if ($skippy) {$skippy -= 1; continue;}
 		$levels -= 1;
 		if ($levels < 0) break;
 		
-		$args = array();
+		$args = [];
 		for ($i=0; $i < $tabs; $i++) $s .=  ($html) ? ' &nbsp; ' : "\t";
 		$tabs -= 1;
 		if ($html) $s .= '<font face="Courier New,Courier">';
@@ -1129,12 +1129,12 @@ function _adodb_backtrace($printOrArr=true,$levels=9999,$skippy=0,$ishtml=null)
 		if (isset($arr['args']))
 		 foreach($arr['args'] as $v) {
 			if (is_null($v)) $args[] = 'null';
-			else if (is_array($v)) $args[] = 'Array['.sizeof($v).']';
+			else if (is_array($v)) $args[] = 'Array['.count($v).']';
 			else if (is_object($v)) $args[] = 'Object:'.get_class($v);
 			else if (is_bool($v)) $args[] = $v ? 'true' : 'false';
 			else {
 				$v = (string) @$v;
-				$str = htmlspecialchars(str_replace(array("\r","\n"),' ',substr($v,0,$MAXSTRLEN)));
+				$str = htmlspecialchars(str_replace(["\r","\n"],' ',substr($v,0,$MAXSTRLEN)));
 				if (strlen($v) > $MAXSTRLEN) $str .= '...';
 				$args[] = $str;
 			}

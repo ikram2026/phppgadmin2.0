@@ -2,7 +2,7 @@
 // Chinese language file contributed by "Cuiyan (cysoft)" cysoft#php.net.
 // Encode by GB2312
 // Simplified Chinese
-$ADODB_LANG_ARRAY = array (
+$ADODB_LANG_ARRAY =  [
 			'LANG'                      => 'cn',
             DB_ERROR                    => '未知错误',
             DB_ERROR_ALREADY_EXISTS     => '已经存在',
@@ -31,5 +31,5 @@ $ADODB_LANG_ARRAY = array (
             DB_ERROR_EXTENSION_NOT_FOUND=> '扩展没有被发现',
             DB_ERROR_NOSUCHDB           => '没有相应的数据库',
             DB_ERROR_ACCESS_VIOLATION   => '没有合适的权限'
-);
+];
 ?>

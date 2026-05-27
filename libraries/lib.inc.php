@@ -29,7 +29,7 @@
 
 	// Check to see if the configuration file exists, if not, explain
 	if (file_exists('conf/config.inc.php')) {
-		$conf = array();
+		$conf = [];
 		include('./conf/config.inc.php');
 	}
 	else {
@@ -44,7 +44,7 @@
 
 	// Always include english.php, since it's the master language file
 	if (!isset($conf['default_lang'])) $conf['default_lang'] = 'english';
-	$lang = array();
+	$lang = [];
 	require_once('./lang/english.php');
 
 	// Create Misc class references

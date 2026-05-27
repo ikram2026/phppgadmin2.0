@@ -50,7 +50,7 @@ GLOBAL $gSQLMaxRows,$gSQLBlockRows,$ADODB_ROUND;
 	
 	if (! $ztabhtml) $ztabhtml = "BORDER='1' WIDTH='98%'";
 	//else $docnt = true;
-	$typearr = array();
+	$typearr = [];
 	$ncols = $rs->FieldCount();
 	$hdr = "<TABLE COLS=$ncols $ztabhtml><tr>\n\n";
 	for ($i=0; $i < $ncols; $i++) {	
@@ -174,17 +174,17 @@ function arr2html(&$arr,$ztabhtml='',$zheaderarray='')
 
 	if ($zheaderarray) {
 		$s .= '<TR>';
-		for ($i=0; $i<sizeof($zheaderarray); $i++) {
+		for ($i=0; $i<count($zheaderarray); $i++) {
 			$s .= "	<TH>{$zheaderarray[$i]}</TH>\n";
 		}
 		$s .= "\n</TR>";
 	}
 	
-	for ($i=0; $i<sizeof($arr); $i++) {
+	for ($i=0; $i<count($arr); $i++) {
 		$s .= '<TR>';
 		$a = $arr[$i];
 		if (is_array($a)) 
-			for ($j=0; $j<sizeof($a); $j++) {
+			for ($j=0; $j<count($a); $j++) {
 				$val = $a[$j];
 				if (empty($val)) $val = '&nbsp;';
 				$s .= "	<TD>$val</TD>\n";

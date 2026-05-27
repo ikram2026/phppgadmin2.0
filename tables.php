@@ -9,7 +9,7 @@
 	// Include application functions
 	include_once('./libraries/lib.inc.php');
 
-	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
+	$action = $_REQUEST['action'] ?? '';
 
 	/**
 	 * Displays a screen where they can enter a new table
@@ -99,7 +99,7 @@
 				}
 
 				$types = $data->getTypes(true, false, true);
-				$types_for_js = array();
+				$types_for_js = [];
 
 				$misc->printTrail('schema');
 				$misc->printTitle($lang['strcreatetable'], 'pg.table.create');
@@ -144,7 +144,7 @@
 					echo "\t\t\t</select>\n\t\t\n";
 					if($i==0) { // only define js types array once
 						$predefined_size_types = array_intersect($data->predefined_size_types,array_keys($types_for_js));
-						$escaped_predef_types = array(); // the JS escaped array elements
+						$escaped_predef_types = []; // the JS escaped array elements
 						foreach($predefined_size_types as $value) {
 							$escaped_predef_types[] = "'{$value}'";
 						}
@@ -193,10 +193,10 @@
 			case 3:
 				global $data, $lang, $_reload_browser;
 
-				if (!isset($_REQUEST['notnull'])) $_REQUEST['notnull'] = array();
-				if (!isset($_REQUEST['uniquekey'])) $_REQUEST['uniquekey'] = array();
-				if (!isset($_REQUEST['primarykey'])) $_REQUEST['primarykey'] = array();
-				if (!isset($_REQUEST['length'])) $_REQUEST['length'] = array();
+				if (!isset($_REQUEST['notnull'])) $_REQUEST['notnull'] = [];
+				if (!isset($_REQUEST['uniquekey'])) $_REQUEST['uniquekey'] = [];
+				if (!isset($_REQUEST['primarykey'])) $_REQUEST['primarykey'] = [];
+				if (!isset($_REQUEST['length'])) $_REQUEST['length'] = [];
 				// Default tablespace to null if it isn't set
 				if (!isset($_REQUEST['spcname'])) $_REQUEST['spcname'] = null;
 
@@ -261,12 +261,12 @@
 			$tbltmp = $data->getTables(true);
 			$tbltmp = $tbltmp->getArray();
 
-			$tables = array();
+			$tables = [];
 			$tblsel = '';
 			foreach ($tbltmp as $a) {
 				$data->fieldClean($a['nspname']);
 				$data->fieldClean($a['relname']);
-				$tables["\"{$a['nspname']}\".\"{$a['relname']}\""] = serialize(array('schema' => $a['nspname'], 'table' => $a['relname']));
+				$tables["\"{$a['nspname']}\".\"{$a['relname']}\""] = serialize(['schema' => $a['nspname'], 'table' => $a['relname']]);
 				if ($_REQUEST['like'] == $tables["\"{$a['nspname']}\".\"{$a['relname']}\""]) 
 					$tblsel = htmlspecialchars($tables["\"{$a['nspname']}\".\"{$a['relname']}\""]);
 			}
@@ -284,7 +284,7 @@
 				$tblsp_ = $data->getTablespaces();
 				if ($tblsp_->recordCount() > 0) {
 					$tblsp_ = $tblsp_->getArray();
-					$tblsp = array();
+					$tblsp = [];
 					foreach($tblsp_ as $a) $tblsp[$a['spcname']] = $a['spcname'];
 
 					echo "\t<tr>\n\t\t<th class=\"data left\">{$lang['strtablespace']}</th>\n";
@@ -423,9 +423,9 @@
 			echo "</form>\n";
 		}
 		else {
-			if (!isset($_POST['show'])) $_POST['show'] = array();
-			if (!isset($_POST['values'])) $_POST['values'] = array();
-			if (!isset($_POST['nulls'])) $_POST['nulls'] = array();
+			if (!isset($_POST['show'])) $_POST['show'] = [];
+			if (!isset($_POST['values'])) $_POST['values'] = [];
+			if (!isset($_POST['nulls'])) $_POST['nulls'] = [];
 
 			// Verify that they haven't supplied a value for unary operators
 			foreach ($_POST['ops'] as $k => $v) {
@@ -435,7 +435,7 @@
 				}
 			}
 
-			if (sizeof($_POST['show']) == 0)
+			if (count($_POST['show']) == 0)
 				doSelectRows(true, $lang['strselectneedscol']);
 			else {
 				// Generate query SQL
@@ -483,7 +483,7 @@
 				echo "<th class=\"data\">{$lang['strnull']}</th><th class=\"data\">{$lang['strvalue']}</th></tr>";
 
 				$i = 0;
-				$fields = array();
+				$fields = [];
 				while (!$attrs->EOF) {
 					$fields[$attrs->fields['attnum']] = $attrs->fields['attname'];
 					$attrs->fields['attnotnull'] = $data->phpBool($attrs->fields['attnotnull']);
@@ -519,10 +519,10 @@
 					echo "<td id=\"row_att_{$attrs->fields['attnum']}\" style=\"white-space:nowrap;\">";
 					if (($fksprops !== false) && isset($fksprops['byfield'][$attrs->fields['attnum']])) {
 						echo $data->printField("values[{$attrs->fields['attnum']}]", $_REQUEST['values'][$attrs->fields['attnum']], 'fktype'/*force FK*/,
-							array(
+							[
 								'id' => "attr_{$attrs->fields['attnum']}",
 								'autocomplete' => 'off'
-							)
+							]
 						);
 					}
 					else {
@@ -561,8 +561,8 @@
 			echo "</form>\n";
 		}
 		else {
-			if (!isset($_POST['values'])) $_POST['values'] = array();
-			if (!isset($_POST['nulls'])) $_POST['nulls'] = array();
+			if (!isset($_POST['values'])) $_POST['values'] = [];
+			if (!isset($_POST['nulls'])) $_POST['nulls'] = [];
 			$_POST['fields'] = unserialize(htmlspecialchars_decode($_POST['fields'], ENT_QUOTES));
 
 			if ($_SESSION['counter']++ == $_POST['protection_counter']) {
@@ -572,8 +572,8 @@
 					if (isset($_POST['insert']))
 						doDefault($lang['strrowinserted']);
 					else {
-						$_REQUEST['values'] = array();
-						$_REQUEST['nulls'] = array();
+						$_REQUEST['values'] = [];
+						$_REQUEST['nulls'] = [];
 						doInsertRow(true, $lang['strrowinserted']);
 					}
 				}
@@ -739,194 +739,194 @@
 
 		$tables = $data->getTables();
 
-		$columns = array(
-			'table' => array(
+		$columns = [
+			'table' => [
 				'title' => $lang['strtable'],
 				'field' => field('relname'),
 				'url'	=> "redirect.php?subject=table&amp;{$misc->href}&amp;",
-				'vars'  => array('table' => 'relname'),
-			),
-			'owner' => array(
+				'vars'  => ['table' => 'relname'],
+			],
+			'owner' => [
 				'title' => $lang['strowner'],
 				'field' => field('relowner'),
-			),
-			'tablespace' => array(
+			],
+			'tablespace' => [
 				'title' => $lang['strtablespace'],
 				'field' => field('tablespace')
-			),
-			'tuples' => array(
+			],
+			'tuples' => [
 				'title' => $lang['strestimatedrowcount'],
 				'field' => field('reltuples'),
 				'type'  => 'numeric'
-			),
-			'actions' => array(
+			],
+			'actions' => [
 				'title' => $lang['stractions'],
-			),
-			'comment' => array(
+			],
+			'comment' => [
 				'title' => $lang['strcomment'],
 				'field' => field('relcomment'),
-			),
-		);
+			],
+		];
 
-		$actions = array(
-			'multiactions' => array(
-				'keycols' => array('table' => 'relname'),
+		$actions = [
+			'multiactions' => [
+				'keycols' => ['table' => 'relname'],
 				'url' => 'tables.php',
 				'default' => 'analyze',
-			),
-			'browse' => array(
+			],
+			'browse' => [
 				'content' => $lang['strbrowse'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'display.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'subject' => 'table',
 							'return' => 'table',
 							'table' => field('relname')
-						)
-					)
-				)
-			),
-			'select' => array(
+						]
+					]
+				]
+			],
+			'select' => [
 				'content' => $lang['strselect'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confselectrows',
 							'table' => field('relname')
-						)
-					)
-				)
-			),
-			'insert' => array(
+						]
+					]
+				]
+			],
+			'insert' => [
 				'content' => $lang['strinsert'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confinsertrow',
 							'table' => field('relname')
-						)
-					)
-				)
-			),
-			'empty' => array(
+						]
+					]
+				]
+			],
+			'empty' => [
 				'multiaction' => 'confirm_empty',
 				'content' => $lang['strempty'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_empty',
 							'table' => field('relname')
-						)
-					)
-				)
-			),
-			'alter' => array(
+						]
+					]
+				]
+			],
+			'alter' => [
 				'content' => $lang['stralter'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tblproperties.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_alter',
 							'table' => field('relname')
-						)
-					)
-				)
-			),
-			'drop' => array(
+						]
+					]
+				]
+			],
+			'drop' => [
 				'multiaction' => 'confirm_drop',
 				'content' => $lang['strdrop'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_drop',
 							'table' => field('relname')
-						)
-					)
-				)
-			),
-			'vacuum' => array(
+						]
+					]
+				]
+			],
+			'vacuum' => [
 				'multiaction' => 'confirm_vacuum',
 				'content' => $lang['strvacuum'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_vacuum',
 							'table' => field('relname')
-						)
-					)
-				)
-			),
-			'analyze' => array(
+						]
+					]
+				]
+			],
+			'analyze' => [
 				'multiaction' => 'confirm_analyze',
 				'content' => $lang['stranalyze'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_analyze',
 							'table' => field('relname')
-						)
-					)
-				)
-			),
-			'reindex' => array(
+						]
+					]
+				]
+			],
+			'reindex' => [
 				'multiaction' => 'confirm_reindex',
 				'content' => $lang['strreindex'],
-				'attr'=> array (
-					'href' => array (
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'confirm_reindex',
 							'table' => field('relname')
-						)
-					)
-				)
-			)
+						]
+					]
+				]
+			]
 			//'cluster' TODO ?
-		);
+		];
 
 		if (!$data->hasTablespaces()) unset($columns['tablespace']);
 
 		$misc->printTable($tables, $columns, $actions, 'tables-tables', $lang['strnotables']);
 
-		$navlinks = array (
-			'create' => array (
-				'attr'=> array (
-					'href' => array (
+		$navlinks =  [
+			'create' =>  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'create',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['strcreatetable']
-			)
-		);
+			]
+		];
 
 		if (($tables->recordCount() > 0) && $data->hasCreateTableLike()) {
-			$navlinks['createlike'] = array (
-				'attr'=> array (
-					'href' => array (
+			$navlinks['createlike'] =  [
+				'attr'=>  [
+					'href' =>  [
 						'url' => 'tables.php',
-						'urlvars' => array (
+						'urlvars' =>  [
 							'action' => 'createlike',
 							'server' => $_REQUEST['server'],
 							'database' => $_REQUEST['database'],
 							'schema' => $_REQUEST['schema']
-						)
-					)
-				),
+						]
+					]
+				],
 				'content' => $lang['strcreatetablelike']
-			);
+			];
 		}
 		$misc->printNavLinks($navlinks, 'tables-tables', get_defined_vars());
 	}
@@ -943,26 +943,26 @@
 
 		$reqvars = $misc->getRequestVars('table');
 
-		$attrs = array(
+		$attrs = [
 			'text'   => field('relname'),
 			'icon'   => 'Table',
 			'iconAction' => url('display.php',
 							$reqvars,
-							array('table' => field('relname'))
+							['table' => field('relname')]
 						),
 			'toolTip'=> field('relcomment'),
 			'action' => url('redirect.php',
 							$reqvars,
-							array('table' => field('relname'))
+							['table' => field('relname')]
 						),
 			'branch' => url('tables.php',
 							$reqvars,
-							array (
+							 [
 								'action' => 'subtree',
 								'table' => field('relname')
-							)
+							]
 						)
-		);
+		];
 
 		$misc->printTree($tables, $attrs, 'tables');
 		exit;
@@ -975,26 +975,26 @@
 		$items = $misc->adjustTabsForTree($tabs);
 		$reqvars = $misc->getRequestVars('table');
 
-		$attrs = array(
+		$attrs = [
 			'text'   => field('title'),
 			'icon'   => field('icon'),
 			'action' => url(
 				field('url'),
 				$reqvars,
 				field('urlvars'),
-				array('table' => $_REQUEST['table'])
+				['table' => $_REQUEST['table']]
 			),
 			'branch' => ifempty(
 				field('branch'), '', url(
 					field('url'),
 					$reqvars,
-					array(
+					[
 						'action' => 'tree',
 						'table' => $_REQUEST['table']
-					)
+					]
 				)
 			),
-		);
+		];
 
 		$misc->printTree($items, $attrs, 'table');
 		exit;
