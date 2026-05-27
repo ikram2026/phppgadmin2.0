@@ -10,10 +10,11 @@
 	include_once('./lang/translations.php');
 
 	// Set error reporting level to max
-	error_reporting(E_ALL);
+	//error_reporting(E_ALL);
+	error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
  
 	// Application name
-	$appName = 'phpPgAdmin';
+	$appName = 'phpPgAdmin2.0';
 
 	// Application version
 	$appVersion = '7.13.0';
@@ -51,11 +52,20 @@
 	$misc = new Misc();
 
 	// Start session (if not auto-started)
-	if (!ini_get('session.auto_start')) {
+	/*if (!ini_get('session.auto_start')) {
 		session_name('PPA_ID');
 		session_start();
-	}
+	}*/
+	// Start session (if not auto-started)
+if (!ini_get('session.auto_start')) {
+    session_name('PPA_ID');
 
+    // phpPgAdmin 2.0: Force cookies to pass safely across framesets on local hosts
+    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.cookie_path', '/');
+
+    session_start();
+}
 	// Do basic PHP configuration checks
 	if (ini_get('magic_quotes_gpc')) {
 		$misc->stripVar($_GET);
@@ -72,6 +82,27 @@
 	ini_set('magic_quotes_runtime', 0);
 	ini_set('magic_quotes_sybase', 0);
 	ini_set('arg_separator.output', '&amp;');
+		// phpPgAdmin 2.0: Global Server Parameter Normalization Core
+	foreach (['server', 'loginServer'] as $paramKey) {
+		if (isset($_REQUEST[$paramKey]) || isset($_POST[$paramKey]) || isset($_GET[$paramKey])) {
+			$currentVal = $_REQUEST[$paramKey] ?? $_POST[$paramKey] ?? $_GET[$paramKey] ?? '';
+			foreach ($conf['servers'] as $idx => $info) {
+				$target_string = $info['host'].':'.$info['port'].':'.$info['sslmode'];
+				if ((string)$currentVal === (string)$idx || (string)$currentVal === $target_string) {
+					// Enforce the clean numeric configuration array index globally
+					if (isset($_REQUEST[$paramKey])) $_REQUEST[$paramKey] = (string)$idx;
+					if (isset($_POST[$paramKey]))    $_POST[$paramKey] = (string)$idx;
+					if (isset($_GET[$paramKey]))     $_GET[$paramKey] = (string)$idx;
+					
+					// Handle the dynamic hashed password parameter name mapping
+					if ($paramKey === 'loginServer' && isset($_POST['loginPassword_'.md5((string)$currentVal)])) {
+						$_POST['loginPassword_'.md5((string)$idx)] = $_POST['loginPassword_'.md5((string)$currentVal)];
+					}
+					break;
+				}
+			}
+		}
+	}
 
 	// If login action is set, then set session variables
 	if (isset($_POST['loginServer']) && isset($_POST['loginUsername']) &&
@@ -93,6 +124,26 @@
 		$_reload_browser = true;
 	}
 
+	// If login action is set, then set session variables
+	if (isset($_POST['loginServer']) && isset($_POST['loginUsername']) &&
+		isset($_POST['loginPassword_'.md5($_POST['loginServer'])])) {
+
+		$_server_info = $misc->getServerInfo($_POST['loginServer']);
+
+		$_server_info['username'] = $_POST['loginUsername'];
+		$_server_info['password'] = $_POST['loginPassword_'.md5($_POST['loginServer'])];
+
+		$misc->setServerInfo(null, $_server_info, $_POST['loginServer']);
+
+		// Check for shared credentials
+		if (isset($_POST['loginShared'])) {
+			$_SESSION['sharedUsername'] = $_POST['loginUsername'];
+			$_SESSION['sharedPassword'] = $_POST['loginPassword_'.md5($_POST['loginServer'])];
+		}
+
+		// phpPgAdmin 2.0: Session Authentication State Dump
+	$_reload_browser = true;
+		}
 	/* select the theme */
 	unset($_theme);
 	if (!isset($conf['theme']))

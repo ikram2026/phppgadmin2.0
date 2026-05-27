@@ -25,7 +25,7 @@
 	echo "<div dir=\"ltr\">\n";
 ?>
 
-	<div class="logo">
+    <div class="logo">
 		<a href="intro.php" target="detail">
 			<?php echo htmlspecialchars($appName) ?> 
 		</a>

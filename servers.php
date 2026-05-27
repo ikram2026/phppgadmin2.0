@@ -13,20 +13,36 @@
 	$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : '';
 	if (!isset($msg)) $msg = '';
 	
-	function doLogout() {
-		global $misc, $lang, $_reload_browser, $plugin_manager;
+		function doLogout() {
+		global $misc, $lang, $_reload_browser, $plugin_manager, $conf;
 
-		$plugin_manager->do_hook('logout', $_REQUEST['logoutServer']);
+		$logoutTarget = $_REQUEST['logoutServer'];
 
-		$server_info = $misc->getServerInfo($_REQUEST['logoutServer']);
-		$misc->setServerInfo(null, null, $_REQUEST['logoutServer']);
+		// Normalize text strings down to numeric indexes so session clear calls succeed
+		foreach ($conf['servers'] as $idx => $info) {
+			$target_string = $info['host'].':'.$info['port'].':'.$info['sslmode'];
+			if ((string)$logoutTarget === (string)$idx || (string)$logoutTarget === $target_string) {
+				$logoutTarget = (string)$idx;
+				break;
+			}
+		}
 
+		$plugin_manager->do_hook('logout', $logoutTarget);
+
+		$server_info = $misc->getServerInfo($logoutTarget);
+		$misc->setServerInfo(null, null, $logoutTarget);
+
+		// Completely purge all global auth tokens from active memory
 		unset($_SESSION['sharedUsername'], $_SESSION['sharedPassword']);
+		if (isset($_SESSION['webdbLogin'][$logoutTarget])) {
+			unset($_SESSION['webdbLogin'][$logoutTarget]);
+		}
 
-		doDefault(sprintf($lang['strlogoutmsg'], $server_info['desc']));
+		doDefault(sprintf($lang['strlogoutmsg'], isset($server_info['desc']) ? $server_info['desc'] : 'PostgreSQL Server'));
 
 		$_reload_browser = true;
 	}
+
 
 	function doDefault($msg = '') {
 		global $conf, $misc;

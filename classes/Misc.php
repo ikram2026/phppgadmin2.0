@@ -489,10 +489,12 @@
 			// Get the name of the database driver we need to use.
 			// The description of the server is returned in $platform.
 			$_type = $_connection->getDriver($platform);
-			if ($_type === null) {
-				printf($lang['strpostgresqlversionnotsupported'], $postgresqlMinVer);
-				exit;
-			}
+			//if ($_type === null) {
+				//printf($lang['strpostgresqlversionnotsupported'], $postgresqlMinVer);
+			//	global $conf, $lang, $postgresqlMinVer;
+
+			//	exit;
+			//}
 			$this->setServerInfo('platform', $platform, $server_id);
 			$this->setServerInfo('pgVersion', $_connection->conn->pgVersion, $server_id);
 
@@ -2164,24 +2166,49 @@
 
 			echo "<tree>\n";
 
-			if (count($treedata) > 0) {
+			//if (count($treedata) > 0) {
+					// phpPgAdmin 2.0: Modern PHP 8.4 object countable validation fix
+		$hasRecords = false;
+		if (is_array($treedata)) {
+			$hasRecords = (count($treedata) > 0);
+		} elseif (is_object($treedata) && method_exists($treedata, 'recordCount')) {
+			$hasRecords = ($treedata->recordCount() > 0);
+		}
+
+		if ($hasRecords) {
 				foreach($treedata as $rec) {
 
+					//echo "<tree";
+					//echo value_xml_attr('text', $attrs['text'], $rec);
+					//echo value_xml_attr('action', $attrs['action'], $rec);
+					//echo value_xml_attr('src', $attrs['branch'], $rec);
+
+					//$icon = $this->icon(value($attrs['icon'], $rec));
+					//echo value_xml_attr('icon', $icon, $rec);
+					//echo value_xml_attr('iconaction', $attrs['iconAction'], $rec);
+					//echo value_xml_attr('iconaction', $attrs['iconAction'] ?? '', $rec);
+
+					//if (!empty($attrs['openicon'])) {
+					//	$icon = $this->icon(value($attrs['openIcon'], $rec));
+					//}
+					//echo value_xml_attr('openicon', $icon, $rec);
+
+					//echo value_xml_attr('tooltip', $attrs['toolTip'], $rec);
 					echo "<tree";
-					echo value_xml_attr('text', $attrs['text'], $rec);
-					echo value_xml_attr('action', $attrs['action'], $rec);
-					echo value_xml_attr('src', $attrs['branch'], $rec);
+echo value_xml_attr('text', $attrs['text'] ?? '', $rec);
+echo value_xml_attr('action', $attrs['action'] ?? '', $rec);
+echo value_xml_attr('src', $attrs['branch'] ?? '', $rec);
 
-					$icon = $this->icon(value($attrs['icon'], $rec));
-					echo value_xml_attr('icon', $icon, $rec);
-					echo value_xml_attr('iconaction', $attrs['iconAction'], $rec);
+$icon = $this->icon(value($attrs['icon'] ?? '', $rec));
+echo value_xml_attr('icon', $icon, $rec);
+echo value_xml_attr('iconaction', $attrs['iconAction'] ?? '', $rec);
 
-					if (!empty($attrs['openicon'])) {
-						$icon = $this->icon(value($attrs['openIcon'], $rec));
-					}
-					echo value_xml_attr('openicon', $icon, $rec);
+if (!empty($attrs['openIcon'])) {
+    $icon = $this->icon(value($attrs['openIcon'], $rec));
+}
+echo value_xml_attr('openicon', $icon, $rec);
 
-					echo value_xml_attr('tooltip', $attrs['toolTip'], $rec);
+echo value_xml_attr('tooltip', $attrs['tooltip'] ?? '', $rec);
 
 					echo " />\n";
 				}
@@ -2347,40 +2374,32 @@
 				else
 					$group = '';
 			
-			foreach($conf['servers'] as $idx => $info) {
-				$server_id = $info['host'].':'.$info['port'].':'.$info['sslmode'];
-				if (($group === false) 
-					or (isset($group[$idx]))
-					or ($group === 'all')
-				) {
-					$server_id = $info['host'].':'.$info['port'].':'.$info['sslmode'];
-					
-					if (isset($logins[$server_id])) $srvs[$server_id] = $logins[$server_id];
-					else $srvs[$server_id] = $info;
-
-					$srvs[$server_id]['id'] = $server_id;
-					$srvs[$server_id]['action'] = url('redirect.php',
-						array(
-							'subject' => 'server',
-							'server' => field('id')
-						)
-					);
-					if (isset($srvs[$server_id]['username'])) {
-						$srvs[$server_id]['icon'] = 'Server';
-						$srvs[$server_id]['branch'] = url('all_db.php',
-							array(
-								'action' => 'tree',
-								'subject' => 'server',
-								'server' => field('id')
-							)
-						);
-					}
-					else {
-						$srvs[$server_id]['icon'] = 'DisconnectedServer';
-						$srvs[$server_id]['branch'] = false;
-					}
-				}
+				foreach ($conf['servers'] as $idx => $info) {
+		$server_id = $info['host'].':'.$info['port'].':'.$info['sslmode'];
+		if (($group === false) or (isset($group[$idx])) or ($group === 'all')) {
+			
+			// phpPgAdmin 2.0: Check active session storage for current logged-in data
+			if (isset($_SESSION['webdbLogin'][$idx])) {
+				$info = array_merge($info, $_SESSION['webdbLogin'][$idx]);
 			}
+
+			$srvs[$server_id] = $info;
+			$srvs[$server_id]['id'] = $server_id;
+			$srvs[$server_id]['action'] = url('redirect.php', array('subject' => 'server', 'server' => $idx));
+
+			// Update the icon state and logout visibility mapping conditions
+			if (isset($info['username']) && $info['username'] !== '') {
+				$srvs[$server_id]['icon'] = 'Server';
+				$srvs[$server_id]['branch'] = "all_db.php?action=tree&server={$idx}";
+				$srvs[$server_id]['username'] = $info['username'];
+			} else {
+				$srvs[$server_id]['icon'] = 'ServerDisconnected';
+				$srvs[$server_id]['branch'] = false;
+				$srvs[$server_id]['username'] = '';
+			}
+		}
+	}
+
 
 			function _cmp_desc($a, $b) {
 				return strcmp($a['desc'], $b['desc']);
@@ -2401,7 +2420,7 @@
 		 * @param $server_id A server identifier (host:port)
 		 * @return An associative array of server properties
 		 */
-		function getServerInfo($server_id = null) {
+		/* function getServerInfo($server_id = null) {
 			global $conf, $_reload_browser, $lang;
 
 			if ($server_id === null && isset($_REQUEST['server']))
@@ -2433,7 +2452,39 @@
 				echo $lang['strinvalidserverparam'];
 				exit;
 			}
+		}*/
+			function getServerInfo($server_id = null) {
+		global $conf;
+
+		// Automatically resolve server parameter if null
+		if ($server_id === null && isset($_REQUEST['server'])) {
+			$server_id = $_REQUEST['server'];
 		}
+
+		if ($server_id === null) {
+			return null;
+		}
+
+		foreach ($conf['servers'] as $idx => $info) {
+			$target_string = $info['host'].':'.$info['port'].':'.$info['sslmode'];
+			
+			// Match safely by numeric index or connection text string
+			if ((string)$server_id === (string)$idx || (string)$server_id === $target_string) {
+				
+				// phpPgAdmin 2.0 Core Fix: Pull authenticated credentials from active session storage
+				if (isset($_SESSION['webdbLogin'][$idx])) {
+					$info = array_merge($info, $_SESSION['webdbLogin'][$idx]);
+				} elseif (isset($_SESSION['webdbLogin'][$target_string])) {
+					$info = array_merge($info, $_SESSION['webdbLogin'][$target_string]);
+				}
+				
+				return $info;
+			}
+		}
+
+		return null;
+	}
+
 
 		/**
 		 * Set server information.

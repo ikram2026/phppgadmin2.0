@@ -13,8 +13,8 @@
 	$lang['applangdir'] = 'ltr';
 
 	// Welcome
-	$lang['strintro'] = 'Welcome to phpPgAdmin.';
-	$lang['strppahome'] = 'phpPgAdmin Homepage';
+	$lang['strintro'] = 'Welcome to phpPgAdmin2.0.';
+	$lang['strppahome'] = 'phpPgAdmin2.0 Homepage';
 	$lang['strpgsqlhome'] = 'PostgreSQL Homepage';
 	$lang['strpgsqlhome_url'] = 'http://www.postgresql.org/';
 	$lang['strlocaldocs'] = 'PostgreSQL Documentation (local)';

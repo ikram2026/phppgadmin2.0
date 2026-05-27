@@ -1,215 +1,428 @@
 <?php
-// $Id: decorator.inc.php,v 1.8 2007/04/05 11:09:38 mr-russ Exp $
 
-// This group of functions and classes provides support for
-// resolving values in a lazy manner (ie, as and when required)
-// using the Decorator pattern.
+declare(strict_types=1);
 
-###TODO: Better documentation!!!
+/*
+ * phpPgAdmin 2.0
+ * Modernized Decorator System
+ * Compatible with:
+ * - PHP 8.4+
+ * - PostgreSQL 18+
+ */
 
-// Construction functions:
+/*
 
-function field($fieldName, $default = null) {
-	return new FieldDecorator($fieldName, $default);
-}
+|--------------------------------------------------------------------------
+| Helper Functions
+|--------------------------------------------------------------------------
+*/
 
-function merge(/* ... */) {
-	return new ArrayMergeDecorator(func_get_args());
-}
-
-function concat(/* ... */) {
-	return new ConcatDecorator(func_get_args());
-}
-
-function callback($callback, $params = null) {
-	return new CallbackDecorator($callback, $params);
-}
-
-function ifempty($value, $empty, $full = null) {
-	return new IfEmptyDecorator($value, $empty, $full);
-}
-
-function url($base, $vars = null /* ... */) {
-	// If more than one array of vars is given,
-	// use an ArrayMergeDecorator to have them merged
-	// at value evaluation time.
-	if (func_num_args() > 2) {
-		$v = func_get_args();
-		array_shift($v);
-		return new UrlDecorator($base, new ArrayMergeDecorator($v));
-	}
-	return new UrlDecorator($base, $vars);
-}
-
-function replace($str, $params) {
-	return new replaceDecorator($str, $params);
-}
-
-// Resolving functions:
-
-function value(&$var, &$fields, $esc = null) {
-	if (is_a($var, 'Decorator')) {
-		$val = $var->value($fields);
-	} else {
-		$val =& $var;
-	}
-
-	if (is_string($val)) {
-		switch($esc) {
-			case 'xml':
-				return strtr($val, array(
-					'&' => '&amp;',
-					"'" => '&apos;', '"' => '&quot;',
-					'<' => '&lt;', '>' => '&gt;'
-				));
-			case 'html':
-				return htmlentities($val, ENT_COMPAT, 'UTF-8');
-			case 'url':
-				return urlencode($val);
-		}
-	}
-	return $val;
-}
-
-function value_xml(&$var, &$fields) {
-	return value($var, $fields, 'xml');
-}
-
-function value_xml_attr($attr, &$var, &$fields) {
-	$val = value($var, $fields, 'xml');
-	if (!empty($val))
-		return " {$attr}=\"{$val}\"";
-	else
-		return '';
-}
-
-function value_url(&$var, &$fields) {
-	return value($var, $fields, 'url');
-}
-
-// Underlying classes:
-
-class Decorator
+function field(string $fieldName, mixed $default = null): FieldDecorator
 {
-	function __construct($value) {
-		$this->v = $value;
-	}
-	
-	function value($fields) {
-		return $this->v;
-	}
+    return new FieldDecorator($fieldName, $default);
 }
 
+function merge(...$arrays): ArrayMergeDecorator
+{
+    return new ArrayMergeDecorator($arrays);
+}
+
+function concat(...$values): ConcatDecorator
+{
+    return new ConcatDecorator($values);
+}
+
+function callback(callable $callback, mixed $params = null): CallbackDecorator
+{
+    return new CallbackDecorator($callback, $params);
+}
+
+function ifempty(
+    mixed $value,
+    mixed $empty,
+    mixed $full = null
+): IfEmptyDecorator {
+    return new IfEmptyDecorator($value, $empty, $full);
+}
+
+function url(
+    mixed $base,
+    mixed $vars = null,
+    mixed ...$additionalVars
+): UrlDecorator {
+
+    if (!empty($additionalVars)) {
+
+        array_unshift($additionalVars, $vars);
+
+        return new UrlDecorator(
+            $base,
+            new ArrayMergeDecorator($additionalVars)
+        );
+    }
+
+    return new UrlDecorator($base, $vars);
+}
+
+function replace(
+    string $str,
+    array $params
+): ReplaceDecorator {
+    return new ReplaceDecorator($str, $params);
+}
+
+/*
+
+|--------------------------------------------------------------------------
+| Value Resolution
+|--------------------------------------------------------------------------
+*/
+
+function value(
+    mixed $var,
+    array $fields,
+    ?string $escape = null
+): mixed {
+
+    if ($var instanceof Decorator) {
+        $val = $var->value($fields);
+    } else {
+        $val = $var;
+    }
+
+    // Modernization Fix: Convert non-string database properties (ints/objects) safely to strings
+    if (is_object($val) && method_exists($val, '__toString')) {
+        $val = (string)$val;
+    } elseif (is_scalar($val)) {
+        $val = (string)$val;
+    }
+
+    if (!is_string($val)) {
+        return $val;
+    }
+
+    return match ($escape) {
+
+        'xml' => strtr($val, [
+            '&' => '&amp;',
+            "'" => '&apos;',
+            '"' => '&quot;',
+            '<' => '&lt;',
+            '>' => '&gt;',
+        ]),
+
+        'html' => htmlspecialchars(
+            $val,
+            ENT_QUOTES | ENT_SUBSTITUTE,
+            'UTF-8'
+        ),
+
+        'url' => rawurlencode($val),
+
+        default => $val,
+    };
+}
+
+function value_xml(
+    mixed $var,
+    array $fields
+): mixed {
+    $resolved = value($var, $fields, 'xml');
+    return is_array($resolved) ? implode('', $resolved) : (string) $resolved;
+}
+
+function value_xml_attr(
+    string $attr,
+    mixed $var,
+    array $fields
+): string {
+
+    $resolved = value($var, $fields, 'xml');
+    $val = is_array($resolved) ? implode('', $resolved) : (string) $resolved;
+
+    if ($val === '') {
+        return '';
+    }
+
+    return sprintf(
+        ' %s="%s"',
+        $attr,
+        $val
+    );
+}
+
+function value_url(
+    mixed $var,
+    array $fields
+): mixed {
+    return value($var, $fields, 'url');
+}
+
+/*
+
+|--------------------------------------------------------------------------
+| Base Decorator
+|--------------------------------------------------------------------------
+*/
+
+abstract class Decorator
+{
+    protected mixed $value;
+
+    public function __construct(mixed $value)
+    {
+        $this->value = $value;
+    }
+
+    public function value(array $fields): mixed
+    {
+        return $this->value;
+    }
+
+    /**
+     * Magic method to allow casting decorators to strings automatically.
+     */
+    public function __toString(): string
+    {
+        global $data;
+        $fields = is_object($data) && isset($data->fields) ? $data->fields : [];
+        $resolved = $this->value($fields);
+        return is_array($resolved) ? implode('', $resolved) : (string) $resolved;
+    }
+}
+
+/*
+
+|--------------------------------------------------------------------------
+| FieldDecorator
+|--------------------------------------------------------------------------
+*/
+
+#[AllowDynamicProperties]
 class FieldDecorator extends Decorator
 {
-	function __construct($fieldName, $default = null) {
-		$this->f = $fieldName;
-		if ($default !== null) $this->d = $default;
-	}
-	
-	function value($fields) {
-		return isset($fields[$this->f]) ? value($fields[$this->f], $fields) : (isset($this->d) ? $this->d : null);
-	}
+    protected string $fieldName;
+    protected mixed $defaultValue = null;
+
+    public function __construct(
+        string $fieldName,
+        mixed $default = null
+    ) {
+        parent::__construct(null);
+        $this->fieldName = $fieldName;
+        $this->defaultValue = $default;
+    }
+
+    public function value(array $fields): mixed
+    {
+        return $fields[$this->fieldName]
+            ?? $this->defaultValue;
+    }
 }
+
+/*
+
+|--------------------------------------------------------------------------
+| ArrayMergeDecorator
+|--------------------------------------------------------------------------
+*/
 
 class ArrayMergeDecorator extends Decorator
 {
-	function __construct($arrays) {
-		$this->m = $arrays;
-	}
-	
-	function value($fields) {
-		$accum = array();
-		foreach($this->m as $var) {
-			$accum = array_merge($accum, value($var, $fields));
-		}
-		return $accum;
-	}
+    protected array $arrays;
+
+    public function __construct(array $arrays)
+    {
+        parent::__construct(null);
+        $this->arrays = $arrays;
+    }
+
+    public function value(array $fields): array
+    {
+        $merged = [];
+
+        foreach ($this->arrays as $var) {
+            $resolved = value($var, $fields);
+            if (is_array($resolved)) {
+                $merged = array_merge($merged, $resolved);
+            }
+        }
+
+        return $merged;
+    }
 }
+
+/*
+
+|--------------------------------------------------------------------------
+| ConcatDecorator
+|--------------------------------------------------------------------------
+*/
 
 class ConcatDecorator extends Decorator
 {
-	function __construct($values) {
-		$this->c = $values;
-	}
-	
-	function value($fields) {
-		$accum = '';
-		foreach($this->c as $var) {
-			$accum .= value($var, $fields);
-		}
-		return trim($accum);
-	}
+    protected array $values;
+
+    public function __construct(array $values)
+    {
+        parent::__construct(null);
+        $this->values = $values;
+    }
+
+    public function value(array $fields): string
+    {
+        $result = '';
+
+        foreach ($this->values as $var) {
+            $resolved = value($var, $fields);
+            $result .= is_array($resolved) ? implode('', $resolved) : (string) $resolved;
+        }
+
+        return trim($result);
+    }
 }
+
+/*
+
+|--------------------------------------------------------------------------
+| CallbackDecorator
+|--------------------------------------------------------------------------
+*/
 
 class CallbackDecorator extends Decorator
 {
-	function __construct($callback, $param = null) {
-		$this->fn = $callback;
-		$this->p = $param;
-	}
-	
-	function value($fields) {
-		return call_user_func($this->fn, $fields, $this->p);
-	}
+    protected $callback;
+    protected mixed $params;
+
+    public function __construct(
+        callable $callback,
+        mixed $params = null
+    ) {
+        parent::__construct(null);
+        $this->callback = $callback;
+        $this->params = $params;
+    }
+
+    public function value(array $fields): mixed
+    {
+        return call_user_func(
+            $this->callback,
+            $fields,
+            $this->params
+        );
+    }
 }
+
+/*
+
+|--------------------------------------------------------------------------
+| IfEmptyDecorator
+|--------------------------------------------------------------------------
+*/
 
 class IfEmptyDecorator extends Decorator
 {
-	function __construct($value, $empty, $full = null) {
-		$this->v = $value;
-		$this->e = $empty;
-		if ($full !== null) $this->f = $full;
-	}
-	
-	function value($fields) {
-		$val = value($this->v, $fields);
-		if (empty($val))
-			return value($this->e, $fields);
-		else
-			return isset($this->f) ? value($this->f, $fields) : $val;
-	}
+    protected mixed $checkValue;
+    protected mixed $emptyValue;
+    protected mixed $fullValue;
+
+    public function __construct(
+        mixed $value,
+        mixed $empty,
+        mixed $full = null
+    ) {
+        parent::__construct(null);
+        $this->checkValue = $value;
+        $this->emptyValue = $empty;
+        $this->fullValue = $full;
+    }
+
+    public function value(array $fields): mixed
+    {
+        $resolved = value($this->checkValue, $fields);
+
+        if (empty($resolved)) {
+            return value($this->emptyValue, $fields);
+        }
+
+        return $this->fullValue !== null
+            ? value($this->fullValue, $fields)
+            : $resolved;
+    }
 }
 
+/*
+
+|--------------------------------------------------------------------------
+| UrlDecorator
+|--------------------------------------------------------------------------
+*/
+
+#[AllowDynamicProperties]
 class UrlDecorator extends Decorator
 {
-	function __construct($base, $queryVars = null) {
-		$this->b = $base;
-		if ($queryVars !== null)
-			$this->q = $queryVars;
-	}
-	
-	function value($fields) {
-		$url = value($this->b, $fields);
-		
-		if ($url === false) return '';
-		
-		if (!empty($this->q)) {
-			$queryVars = value($this->q, $fields);
-			
-			$sep = '?';
-			foreach ($queryVars as $var => $value) {
-				$url .= $sep . value_url($var, $fields) . '=' . value_url($value, $fields);
-				$sep = '&';
-			}
-		}
-		return $url;
-	}
+    protected mixed $baseUrl;
+    protected mixed $queryVars;
+
+    public function __construct(
+        mixed $base,
+        mixed $queryVars = null
+    ) {
+        parent::__construct(null);
+        $this->baseUrl = $base;
+        $this->queryVars = $queryVars;
+    }
+
+    public function value(array $fields): string
+    {
+        $resolvedBase = value($this->baseUrl, $fields);
+        $url = is_array($resolvedBase) ? implode('', $resolvedBase) : (string) $resolvedBase;
+
+        if ($url === '') {
+            return '';
+        }
+
+        if (!empty($this->queryVars)) {
+            $queryVars = value($this->queryVars, $fields);
+            if (is_array($queryVars)) {
+                $queryString = http_build_query($queryVars, '', '&', PHP_QUERY_RFC3986);
+                if (!empty($queryString)) {
+                    $url .= '?' . $queryString;
+                }
+            }
+        }
+
+        return $url;
+    }
 }
 
-class replaceDecorator extends Decorator
+/*
+
+|--------------------------------------------------------------------------
+| ReplaceDecorator
+|--------------------------------------------------------------------------
+*/
+
+class ReplaceDecorator extends Decorator
 {
-	function __construct($str, $params) {
-		$this->s = $str;
-		$this->p = $params;
-	}
+    protected string $string;
+    protected array $params;
 
-	function value($fields) {
-		$str = $this->s;
-		foreach ($this->p as $k => $v) {
-			$str = str_replace($k, value($v, $fields), $str);
-		}
-		return $str;
-	}
+    public function __construct(string $str, array $params)
+    {
+        parent::__construct(null);
+        $this->string = $str;
+        $this->params = $params;
+    }
+
+    public function value(array $fields): string
+    {
+        $str = $this->string;
+        foreach ($this->params as $k => $v) {
+            $resolvedVal = value($v, $fields);
+            $str = str_replace($k, is_array($resolvedVal) ? implode('', $resolvedVal) : (string) $resolvedVal, $str);
+        }
+        return $str;
+    }
 }
-?>
+

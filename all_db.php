@@ -199,7 +199,9 @@
 		echo "\t\t<td class=\"data1\">\n";
 		echo "\t\t\t<select name=\"formEncoding\">\n";
 		echo "\t\t\t\t<option value=\"\"></option>\n";
-		while (list ($key) = each ($data->codemap)) {
+		//while (list ($key) = each ($data->codemap)) {
+		foreach ($data->codemap as $key => $value) {
+
 		    echo "\t\t\t\t<option value=\"", htmlspecialchars($key), "\"",
 				($key == $_POST['formEncoding']) ? ' selected="selected"' : '', ">",
 				$misc->printVal($key), "</option>\n";
@@ -468,33 +470,45 @@
 		$misc->printNavLinks($navlinks, 'all_db-databases', get_defined_vars());
 	}
 
-	function doTree() {
-		global $misc, $data, $lang;
+		function doTree() {
+		global $data, $misc, $conf;
+		global $lang;
 
 		$databases = $data->getDatabases();
 
-		$reqvars = $misc->getRequestVars('database');
+		//$reqvars = $misc->getRequestVars('database');
+		  $reqvars = $misc->getRequestVars('database');
+   
+   // phpPgAdmin 2.0: Hard-bind server cluster tracking variables for AJAX frames
+   if (!isset($reqvars['server'])) {
+       $reqvars['server'] = 0;
+   }
+
 
 		$attrs = array(
 			'text'   => field('datname'),
+			'action' => url('redirect.php', $reqvars, array('subject' => 'database', 'database' => field('datname'))),
 			'icon'   => 'Database',
-			'toolTip'=> field('datcomment'),
-			'action' => url('redirect.php',
-							$reqvars,
-							array('database' => field('datname'))
-						),
-			'branch' => url('database.php',
-							$reqvars,
-							array(
-								'action' => 'tree',
-								'database' => field('datname')
-							)
-						),
+			//'branch' => url('all_db.php', $reqvars, array('action' => 'tree', 'database' => field('datname')))
+			// phpPgAdmin 2.0: Route database nodes to schemas tree to prevent recursive loops
+            'branch' => url('schemas.php', $reqvars, array('action' => 'tree', 'database' => field('datname')))
 		);
 
-		$misc->printTree($databases, $attrs, 'databases');
-		exit;
+		// Clean modern array datatypes for the AJAX Javascript tree parser
+		if (is_object($databases) && isset($databases->recordSet)) {
+			foreach ($databases->recordSet as $key => $val) {
+				if (isset($databases->recordSet[$key]['datname'])) {
+					$databases->recordSet[$key]['datname'] = (string)$databases->recordSet[$key]['datname'];
+				}
+			}
+		}
+
+		//$misc->printTreeXML($databases, $attrs);
+	//}
+			$misc->printTreeXML($databases, $attrs);
+		exit; // phpPgAdmin 2.0: Halt script here to block trailing HTML leaks
 	}
+
 
 	if ($action == 'tree') doTree();
 

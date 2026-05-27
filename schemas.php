@@ -100,8 +100,10 @@
 						'url' => 'schemas.php',
 						'urlvars' => array (
 							'action' => 'create',
-							'server' => $_REQUEST['server'],
-							'database' => $_REQUEST['database']
+							 'server' => $_REQUEST['server'] ?? '',
+							//'server' => $_REQUEST['server'],
+							//'database' => $_REQUEST['database']
+							'database' => $_REQUEST['database'] ?? ''
 						)
 					)
 				),

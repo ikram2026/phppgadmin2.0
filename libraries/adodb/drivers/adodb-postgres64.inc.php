@@ -117,7 +117,8 @@ WHERE relkind in ('r','v') AND (c.relname='%s' or c.relname = lower('%s'))
 	// to know what the concequences are. The other values are correct (wheren't in 0.94)
 	// -- Freek Dijkstra 
 
-	function ADODB_postgres64() 
+	// function ADODB_postgres64()
+	function __construct() 
 	{
 	// changes the metaColumnsSQL, adds columns: attnum[6]
 	}
